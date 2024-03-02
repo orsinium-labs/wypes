@@ -65,6 +65,13 @@ func TestRoundtrip(t *testing.T) {
 	t.Run("Int16", testRoundtrip[wypes.Int16])
 	t.Run("Int32", testRoundtrip[wypes.Int32])
 	t.Run("Int64", testRoundtrip[wypes.Int64])
+	t.Run("Int", testRoundtrip[wypes.Int])
+
+	t.Run("UInt8", testRoundtrip[wypes.UInt8])
+	t.Run("UInt16", testRoundtrip[wypes.UInt16])
+	t.Run("UInt32", testRoundtrip[wypes.UInt32])
+	t.Run("UInt64", testRoundtrip[wypes.UInt64])
+	t.Run("UInt", testRoundtrip[wypes.UInt])
 }
 
 // A static check that all primitive types can be implicitly cast from literals.
