@@ -1,5 +1,9 @@
 package wypes
 
+import (
+	"context"
+)
+
 type Raw = uint64
 type Addr = uint32
 type ValueType = byte
@@ -26,9 +30,10 @@ type Stack interface {
 }
 
 type Store struct {
-	Memory Memory
-	Stack  Stack
-	Refs   map[uint32]any
+	Memory  Memory
+	Stack   Stack
+	Refs    map[uint32]any
+	Context context.Context
 }
 
 type Value interface {
@@ -36,9 +41,11 @@ type Value interface {
 }
 
 type Lift[T any] interface {
+	Value
 	Lift(Store) T
 }
 
 type Lower[T any] interface {
+	Value
 	Lower(Store) T
 }
