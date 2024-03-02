@@ -10,19 +10,30 @@ import (
 	"github.com/tetratelabs/wazero/api"
 )
 
-func DefineWazero(runtime wazero.Runtime, modules Modules) {
-	for modName, funcs := range modules {
-		mb := runtime.NewHostModuleBuilder(modName)
-		for funcName, funcDef := range funcs {
-			fb := mb.NewFunctionBuilder()
-			fb = fb.WithGoModuleFunction(
-				wazeroAdaptHostFunc(funcDef),
-				funcDef.ParamValueTypes(),
-				funcDef.ResultValueTypes(),
-			)
-			mb = fb.Export(funcName)
+func (ms Modules) DefineWazero(runtime wazero.Runtime) error {
+	for modName, funcs := range ms {
+		err := funcs.DefineWazero(runtime, modName)
+		if err != nil {
+			return err
 		}
 	}
+	return nil
+}
+
+func (m Module) DefineWazero(runtime wazero.Runtime, modName string) error {
+	var err error
+	mb := runtime.NewHostModuleBuilder(modName)
+	for funcName, funcDef := range m {
+		fb := mb.NewFunctionBuilder()
+		fb = fb.WithGoModuleFunction(
+			wazeroAdaptHostFunc(funcDef),
+			funcDef.ParamValueTypes(),
+			funcDef.ResultValueTypes(),
+		)
+		mb = fb.Export(funcName)
+	}
+	_, err = mb.Instantiate(context.Background())
+	return err
 }
 
 func wazeroAdaptHostFunc(hf HostFunc) api.GoModuleFunction {
