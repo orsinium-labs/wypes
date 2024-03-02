@@ -29,6 +29,24 @@ type Stack interface {
 	Pop() Raw
 }
 
+// SliceStack adapts a slice of raw values into a [Stack].
+type SliceStack []uint64
+
+func (s *SliceStack) Push(v uint64) {
+	*s = append(*s, v)
+}
+
+func (s *SliceStack) Pop() uint64 {
+	idx := len(*s) - 1
+	v := (*s)[idx]
+	*s = (*s)[:idx]
+	return v
+}
+
+func (s *SliceStack) Len() int {
+	return len(*s)
+}
+
 type Store struct {
 	Memory  Memory
 	Stack   Stack
