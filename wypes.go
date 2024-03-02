@@ -47,7 +47,7 @@ type Lift[T any] interface {
 
 type Lower[T any] interface {
 	Value
-	Lower(Store) T
+	Lower(Store)
 }
 
 type Modules map[string]Module

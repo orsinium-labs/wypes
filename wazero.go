@@ -1,3 +1,6 @@
+//go:build !nowazero
+// +build !nowazero
+
 package wypes
 
 import (

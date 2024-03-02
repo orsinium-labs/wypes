@@ -1,2 +1,6 @@
+github.com/matryer/is v1.4.1 h1:55ehd8zaGABKLXQUe2awZ99BD/PTc2ls+KV/dXphgEQ=
+github.com/matryer/is v1.4.1/go.mod h1:8I/i5uYgLzgsgEloJE1U6xx5HkBQpAZvepWuujKwMRU=
+github.com/orsinium-labs/tinytest v1.0.0 h1:YiGm/whlGm3mn/ynx9CCFuvEa3Q6yEGrzrKXEqJOkdc=
+github.com/orsinium-labs/tinytest v1.0.0/go.mod h1:GwcYBp0aKi6zujzBXFpCnqw6RSLSp9JSedDyu/V1DF4=
 github.com/tetratelabs/wazero v1.6.0 h1:z0H1iikCdP8t+q341xqepY4EWvHEw8Es7tlqiVzlP3g=
 github.com/tetratelabs/wazero v1.6.0/go.mod h1:0U0G41+ochRKoPKCJlh0jMg1CHkyfK8kDqiirMmKY8A=
