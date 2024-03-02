@@ -7,11 +7,6 @@ import (
 	"github.com/orsinium-labs/wypes"
 )
 
-func newStack() *wypes.SliceStack {
-	s := make(wypes.SliceStack, 0, 4)
-	return &s
-}
-
 type tripping[T any] interface {
 	wypes.Lower[T]
 	wypes.Lift[T]
@@ -19,7 +14,7 @@ type tripping[T any] interface {
 
 func testRoundtrip[T tripping[T]](t *testing.T) {
 	c := is.NewRelaxed(t)
-	stack := newStack()
+	stack := wypes.NewSliceStack(4)
 	store := wypes.Store{Stack: stack}
 
 	// push the value to be checked on the stack

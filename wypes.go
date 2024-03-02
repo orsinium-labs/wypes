@@ -32,6 +32,11 @@ type Stack interface {
 // SliceStack adapts a slice of raw values into a [Stack].
 type SliceStack []uint64
 
+func NewSliceStack(cap int) *SliceStack {
+	s := make(SliceStack, 0, cap)
+	return &s
+}
+
 func (s *SliceStack) Push(v uint64) {
 	*s = append(*s, v)
 }
