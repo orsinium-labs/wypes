@@ -1,6 +1,9 @@
 package wypes
 
-import "math"
+import (
+	"math"
+	"time"
+)
 
 type Bool bool
 
@@ -23,7 +26,7 @@ func (v Bool) Lower(s Store) {
 type Float32 float32
 
 func (Float32) ValueTypes() []ValueType {
-	return []ValueType{ValueTypeI32}
+	return []ValueType{ValueTypeF32}
 }
 
 func (Float32) Lift(s Store) Float32 {
@@ -39,7 +42,7 @@ func (v Float32) Lower(s Store) {
 type Float64 float64
 
 func (Float64) ValueTypes() []ValueType {
-	return []ValueType{ValueTypeI32}
+	return []ValueType{ValueTypeF64}
 }
 
 func (Float64) Lift(s Store) Float64 {
@@ -50,4 +53,32 @@ func (Float64) Lift(s Store) Float64 {
 func (v Float64) Lower(s Store) {
 	r := math.Float64bits(float64(v))
 	s.Stack.Push(Raw(r))
+}
+
+type Duration time.Duration
+
+func (Duration) ValueTypes() []ValueType {
+	return []ValueType{ValueTypeI64}
+}
+
+func (Duration) Lift(s Store) Duration {
+	return Duration(s.Stack.Pop())
+}
+
+func (v Duration) Lower(s Store) {
+	s.Stack.Push(Raw(v))
+}
+
+type Time time.Time
+
+func (Time) ValueTypes() []ValueType {
+	return []ValueType{ValueTypeI64}
+}
+
+func (Time) Lift(s Store) Time {
+	return Time(time.Unix(int64(s.Stack.Pop()), 0))
+}
+
+func (v Time) Lower(s Store) {
+	s.Stack.Push(Raw(time.Time(v).Unix()))
 }
