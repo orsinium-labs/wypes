@@ -49,3 +49,7 @@ type Lower[T any] interface {
 	Value
 	Lower(Store) T
 }
+
+type Modules map[string]Module
+
+type Module map[string]HostFunc

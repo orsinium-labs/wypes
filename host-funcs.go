@@ -14,12 +14,28 @@ func (f *HostFunc) NumResults() int {
 	return countStackValues(f.Results)
 }
 
+func (f *HostFunc) ParamValueTypes() []ValueType {
+	return mergeValueTypes(f.Params)
+}
+
+func (f *HostFunc) ResultValueTypes() []ValueType {
+	return mergeValueTypes(f.Results)
+}
+
 func countStackValues(values []Value) int {
 	count := 0
 	for _, v := range values {
 		count += len(v.ValueTypes())
 	}
 	return count
+}
+
+func mergeValueTypes(values []Value) []ValueType {
+	res := make([]ValueType, 0, len(values))
+	for _, v := range values {
+		res = append(res, v.ValueTypes()...)
+	}
+	return res
 }
 
 func H1[A Lift[A], Z Lower[Z]](fn func(A) Z) HostFunc {
