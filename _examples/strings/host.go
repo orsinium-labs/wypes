@@ -14,6 +14,13 @@ import (
 //go:embed guest.wasm
 var source []byte
 
+func hostGetName(offset wypes.UInt32) wypes.String {
+	return wypes.String{
+		Offset: offset.Unwrap(),
+		Raw:    "Joe",
+	}
+}
+
 func hostPrint(s wypes.String) wypes.Void {
 	fmt.Println(s.Unwrap())
 	return wypes.Void{}
@@ -31,7 +38,8 @@ func run() error {
 	r := wazero.NewRuntime(ctx)
 	modules := wypes.Modules{
 		"env": {
-			"print": wypes.H1(hostPrint),
+			"get_name": wypes.H1(hostGetName),
+			"print":    wypes.H1(hostPrint),
 		},
 	}
 	err := modules.DefineWazero(r)

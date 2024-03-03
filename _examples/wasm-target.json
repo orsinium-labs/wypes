@@ -6,6 +6,8 @@
   "goos": "linux",
   "goarch": "arm",
   "linker": "wasm-ld",
+  "gc": "leaking",
+  "libc": "wasi-libc",
   "rtlib": "compiler-rt",
   "scheduler": "none",
   "cflags": ["-mno-bulk-memory", "-mnontrapping-fptoint", "-msign-ext"],
