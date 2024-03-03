@@ -3,6 +3,7 @@ package wypes
 // Int8 wraps [int8], a signed 8-bit integer.
 type Int8 int8
 
+// Unwrap returns the wrapped value.
 func (v Int8) Unwrap() int8 {
 	return int8(v)
 }
@@ -25,6 +26,7 @@ func (v Int8) Lower(s Store) {
 // Int16 wraps [int16], a signed 16-bit integer.
 type Int16 int16
 
+// Unwrap returns the wrapped value.
 func (v Int16) Unwrap() int16 {
 	return int16(v)
 }
@@ -47,6 +49,7 @@ func (v Int16) Lower(s Store) {
 // Int32 wraps [int32], a signed 32-bit integer.
 type Int32 int32
 
+// Unwrap returns the wrapped value.
 func (v Int32) Unwrap() int32 {
 	return int32(v)
 }
@@ -69,6 +72,7 @@ func (v Int32) Lower(s Store) {
 // Int64 wraps [int64], a signed 64-bit integer.
 type Int64 int64
 
+// Unwrap returns the wrapped value.
 func (v Int64) Unwrap() int64 {
 	return int64(v)
 }
@@ -91,6 +95,7 @@ func (v Int64) Lower(s Store) {
 // Int wraps [int], a signed 32-bit integer.
 type Int int
 
+// Unwrap returns the wrapped value.
 func (v Int) Unwrap() int {
 	return int(v)
 }

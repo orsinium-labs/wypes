@@ -6,8 +6,10 @@ import (
 	"time"
 )
 
+// Bool wraps [bool].
 type Bool bool
 
+// Unwrap returns the wrapped value.
 func (v Bool) Unwrap() bool {
 	return bool(v)
 }
@@ -31,8 +33,10 @@ func (v Bool) Lower(s Store) {
 	s.Stack.Push(Raw(res))
 }
 
+// Float32 wraps [float32].
 type Float32 float32
 
+// Unwrap returns the wrapped value.
 func (v Float32) Unwrap() float32 {
 	return float32(v)
 }
@@ -54,8 +58,10 @@ func (v Float32) Lower(s Store) {
 	s.Stack.Push(Raw(r))
 }
 
+// Float64 wraps [float64].
 type Float64 float64
 
+// Unwrap returns the wrapped value.
 func (v Float64) Unwrap() float64 {
 	return float64(v)
 }
@@ -77,8 +83,10 @@ func (v Float64) Lower(s Store) {
 	s.Stack.Push(Raw(res))
 }
 
+// Complex64 wraps [complex64].
 type Complex64 complex64
 
+// Unwrap returns the wrapped value.
 func (v Complex64) Unwrap() complex64 {
 	return complex64(v)
 }
@@ -105,8 +113,10 @@ func (v Complex64) Lower(s Store) {
 	s.Stack.Push(Raw(vImag))
 }
 
+// Complex128 wraps [complex128].
 type Complex128 complex128
 
+// Unwrap returns the wrapped value.
 func (v Complex128) Unwrap() complex128 {
 	return complex128(v)
 }
@@ -133,8 +143,10 @@ func (v Complex128) Lower(s Store) {
 	s.Stack.Push(Raw(vImag))
 }
 
+// Duration wraps [time.Duration].
 type Duration time.Duration
 
+// Unwrap returns the wrapped value.
 func (v Duration) Unwrap() time.Duration {
 	return time.Duration(v)
 }
@@ -154,8 +166,10 @@ func (v Duration) Lower(s Store) {
 	s.Stack.Push(Raw(v))
 }
 
+// Time wraps [time.Time].
 type Time time.Time
 
+// Unwrap returns the wrapped value.
 func (v Time) Unwrap() time.Time {
 	return time.Time(v)
 }
@@ -175,8 +189,10 @@ func (v Time) Lower(s Store) {
 	s.Stack.Push(Raw(time.Time(v).Unix()))
 }
 
+// Context wraps [context.Context].
 type Context struct{ ctx context.Context }
 
+// Unwrap returns the wrapped value.
 func (v Context) Unwrap() context.Context {
 	return v.ctx
 }
@@ -225,6 +241,7 @@ type HostRef[T any] struct {
 	raw any
 }
 
+// Unwrap returns the wrapped value.
 func (v HostRef[T]) Unwrap() T {
 	return v.raw.(T)
 }

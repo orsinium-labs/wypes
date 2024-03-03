@@ -1,7 +1,9 @@
 package wypes
 
+// Bytes wraps a slice of bytes.
 type Bytes []byte
 
+// Unwrap returns the wrapped value.
 func (v Bytes) Unwrap() []byte {
 	return []byte(v)
 }
@@ -19,8 +21,10 @@ func (Bytes) Lift(s Store) Bytes {
 	return Bytes(b)
 }
 
+// String wraps [string].
 type String string
 
+// Unwrap returns the wrapped value.
 func (v String) Unwrap() string {
 	return string(v)
 }

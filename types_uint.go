@@ -3,6 +3,7 @@ package wypes
 // UInt8 wraps uint8, 8-bit unsigned integer.
 type UInt8 uint8
 
+// Unwrap returns the wrapped value.
 func (v UInt8) Unwrap() uint8 {
 	return uint8(v)
 }
@@ -25,6 +26,7 @@ func (v UInt8) Lower(s Store) {
 // UInt16 wraps uint16, 16-bit unsigned integer.
 type UInt16 uint16
 
+// Unwrap returns the wrapped value.
 func (v UInt16) Unwrap() uint16 {
 	return uint16(v)
 }
@@ -47,6 +49,7 @@ func (v UInt16) Lower(s Store) {
 // UInt32 wraps uint32, 32-bit unsigned integer.
 type UInt32 uint32
 
+// Unwrap returns the wrapped value.
 func (v UInt32) Unwrap() uint32 {
 	return uint32(v)
 }
@@ -69,6 +72,7 @@ func (v UInt32) Lower(s Store) {
 // UInt64 wraps uint64, 64-bit unsigned integer.
 type UInt64 uint64
 
+// Unwrap returns the wrapped value.
 func (v UInt64) Unwrap() uint64 {
 	return uint64(v)
 }
@@ -91,6 +95,7 @@ func (v UInt64) Lower(s Store) {
 // UInt wraps uint, 32-bit unsigned integer.
 type UInt uint
 
+// Unwrap returns the wrapped value.
 func (v UInt) Unwrap() uint {
 	return uint(v)
 }
@@ -113,6 +118,7 @@ func (v UInt) Lower(s Store) {
 // UIntPtr wraps uintptr, pointer-sized unsigned integer.
 type UIntPtr uintptr
 
+// Unwrap returns the wrapped value.
 func (v UIntPtr) Unwrap() uintptr {
 	return uintptr(v)
 }
