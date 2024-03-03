@@ -6,10 +6,12 @@ func (v Bytes) Unwrap() []byte {
 	return []byte(v)
 }
 
+// ValueTypes implements [Value] interface.
 func (v Bytes) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI32, ValueTypeI32}
 }
 
+// Lift implements [Lift] interface.
 func (Bytes) Lift(s Store) Bytes {
 	offset := s.Stack.Pop()
 	size := s.Stack.Pop()
@@ -23,10 +25,12 @@ func (v String) Unwrap() string {
 	return string(v)
 }
 
+// ValueTypes implements [Value] interface.
 func (v String) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI32, ValueTypeI32}
 }
 
+// Lift implements [Lift] interface.
 func (String) Lift(s Store) String {
 	offset := s.Stack.Pop()
 	size := s.Stack.Pop()
