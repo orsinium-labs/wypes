@@ -68,9 +68,14 @@ type Lift[T any] interface {
 	Lift(Store) T
 }
 
-type Lower[T any] interface {
+type Lower interface {
 	Value
 	Lower(Store)
+}
+
+type LiftLower[T any] interface {
+	Lift[T]
+	Lower
 }
 
 type Modules map[string]Module

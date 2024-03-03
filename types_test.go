@@ -7,12 +7,7 @@ import (
 	"github.com/orsinium-labs/wypes"
 )
 
-type tripping[T any] interface {
-	wypes.Lower[T]
-	wypes.Lift[T]
-}
-
-func testRoundtrip[T tripping[T]](t *testing.T) {
+func testRoundtrip[T wypes.LiftLower[T]](t *testing.T) {
 	c := is.NewRelaxed(t)
 	stack := wypes.NewSliceStack(4)
 	store := wypes.Store{Stack: stack}

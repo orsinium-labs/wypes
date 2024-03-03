@@ -38,7 +38,7 @@ func mergeValueTypes(values []Value) []ValueType {
 	return res
 }
 
-func H1[A Lift[A], Z Lower[Z]](fn func(A) Z) HostFunc {
+func H1[A Lift[A], Z Lower](fn func(A) Z) HostFunc {
 	var a A
 	var z Z
 	return HostFunc{
@@ -50,7 +50,7 @@ func H1[A Lift[A], Z Lower[Z]](fn func(A) Z) HostFunc {
 	}
 }
 
-func H2[A Lift[A], B Lift[B], Z Lower[Z]](fn func(A, B) Z) HostFunc {
+func H2[A Lift[A], B Lift[B], Z Lower](fn func(A, B) Z) HostFunc {
 	var a A
 	var b B
 	var z Z
