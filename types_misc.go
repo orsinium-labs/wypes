@@ -150,3 +150,30 @@ func (v Pair[L, R]) Lower(s Store) {
 	v.Left.Lower(s)
 	v.Right.Lower(s)
 }
+
+type Ref[T any] struct {
+	idx uint32
+	raw any
+}
+
+func (v Ref[T]) Unwrap() T {
+	return v.raw.(T)
+}
+
+func (Ref[T]) ValueTypes() []ValueType {
+	return []ValueType{ValueTypeI32}
+}
+
+func (Ref[T]) Lift(s Store) Ref[T] {
+	idx := uint32(s.Stack.Pop())
+	var def T
+	return Ref[T]{
+		idx: idx,
+		raw: s.Refs.Get(idx, def),
+	}
+}
+
+func (v Ref[T]) Lower(s Store) {
+	s.Refs.Set(v.idx, v.raw)
+	s.Stack.Push(Raw(v.idx))
+}

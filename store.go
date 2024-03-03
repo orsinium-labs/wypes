@@ -55,6 +55,10 @@ func (r MapRefs) Set(idx uint32, val any) {
 	r[idx] = val
 }
 
+func (r MapRefs) Drop(idx uint32) {
+	r[idx] = nil
+}
+
 type Stack interface {
 	Push(Raw)
 	Pop() Raw
