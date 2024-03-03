@@ -42,7 +42,7 @@ func wazeroAdaptHostFunc(hf HostFunc) api.GoModuleFunction {
 		store := Store{
 			Memory:  mod.Memory(),
 			Stack:   &adaptedStack,
-			Refs:    map[uint32]any{},
+			Refs:    NewMapRefs(),
 			Context: ctx,
 		}
 		hf.Call(store)

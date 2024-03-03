@@ -19,9 +19,40 @@ const (
 	ValueTypeF64 ValueType = 0x7c
 )
 
+type Store struct {
+	Memory  Memory
+	Stack   Stack
+	Refs    Refs
+	Context context.Context
+}
+
 type Memory interface {
 	Read(offset Addr, count uint32) ([]byte, bool)
 	Write(offset Addr, v []byte) bool
+}
+
+type Refs interface {
+	Get(idx uint32, def any) any
+	Set(idx uint32, val any)
+}
+
+type MapRefs map[uint32]any
+
+func NewMapRefs() MapRefs {
+	r := make(MapRefs, 0)
+	return r
+}
+
+func (r MapRefs) Get(idx uint32, def any) any {
+	val, found := r[idx]
+	if !found {
+		return def
+	}
+	return val
+}
+
+func (r MapRefs) Set(idx uint32, val any) {
+	r[idx] = val
 }
 
 type Stack interface {
@@ -50,13 +81,6 @@ func (s *SliceStack) Pop() uint64 {
 
 func (s *SliceStack) Len() int {
 	return len(*s)
-}
-
-type Store struct {
-	Memory  Memory
-	Stack   Stack
-	Refs    map[uint32]any
-	Context context.Context
 }
 
 type Value interface {
