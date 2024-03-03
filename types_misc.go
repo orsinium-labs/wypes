@@ -259,8 +259,9 @@ func (HostRef[T]) ValueTypes() []ValueType {
 func (HostRef[T]) Lift(s Store) HostRef[T] {
 	index := uint32(s.Stack.Pop())
 	var def T
+	raw, _ := s.Refs.Get(index, def)
 	return HostRef[T]{
-		Raw:   s.Refs.Get(index, def),
+		Raw:   raw,
 		Index: index,
 	}
 }
