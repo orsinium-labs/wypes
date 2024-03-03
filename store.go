@@ -22,6 +22,8 @@ const (
 )
 
 // Store provides access for host-defined functions to the runtime data.
+//
+// Store itself implements [Lift] and so can be used as a host-defined function argument.
 type Store struct {
 	// Stack is where [Lift] takes the values from and [Lower] puts values to.
 	Stack Stack
@@ -36,6 +38,16 @@ type Store struct {
 
 	// Context can be retrieved by the [Context] type.
 	Context context.Context
+}
+
+// ValueTypes implements [Value] interface.
+func (Store) ValueTypes() []ValueType {
+	return []ValueType{}
+}
+
+// Lift implements [Lift] interface.
+func (Store) Lift(s Store) Store {
+	return s
 }
 
 // Memory provides access to the linear memory of the wasm runtime.
