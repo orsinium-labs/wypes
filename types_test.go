@@ -89,4 +89,17 @@ func TestAssignLiteral(t *testing.T) {
 	var _ wypes.Int16 = 12377
 	var _ wypes.Int32 = 1237777777
 	var _ wypes.Int64 = 1237777777777777777
+	var _ wypes.Int = 1237777777
+
+	var _ wypes.UInt8 = 123
+	var _ wypes.UInt16 = 12377
+	var _ wypes.UInt32 = 1237777777
+	var _ wypes.UInt64 = 1237777777777777777
+	var _ wypes.UInt = 1237777777
+
+	var _ wypes.Float32 = 1.5
+	var _ wypes.Float64 = 1.5
+	var _ wypes.Complex64 = 3.4 + 1.5i
+	var _ wypes.Complex128 = 3.4 + 1.5i
+	var _ wypes.Bool = true
 }

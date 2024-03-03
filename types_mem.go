@@ -75,3 +75,7 @@ func (v String) Lower(s Store) {
 	s.Stack.Push(Raw(v.Offset))
 	s.Stack.Push(Raw(size))
 }
+
+// TODO: arbitrary slice
+// TODO: fixed-width array
+// TODO: CString
