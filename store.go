@@ -36,17 +36,20 @@ type Memory interface {
 type Refs interface {
 	Get(idx uint32, def any) any
 	Set(idx uint32, val any)
+	Put(val any) uint32
 }
 
-type MapRefs map[uint32]any
+type MapRefs struct {
+	raw map[uint32]any
+	idx uint32
+}
 
 func NewMapRefs() MapRefs {
-	r := make(MapRefs, 0)
-	return r
+	return MapRefs{raw: make(map[uint32]any, 0)}
 }
 
 func (r MapRefs) Get(idx uint32, def any) any {
-	val, found := r[idx]
+	val, found := r.raw[idx]
 	if !found {
 		return def
 	}
@@ -54,11 +57,17 @@ func (r MapRefs) Get(idx uint32, def any) any {
 }
 
 func (r MapRefs) Set(idx uint32, val any) {
-	r[idx] = val
+	r.raw[idx] = val
+}
+
+func (r MapRefs) Put(val any) uint32 {
+	r.idx += 1
+	r.raw[r.idx] = val
+	return r.idx
 }
 
 func (r MapRefs) Drop(idx uint32) {
-	r[idx] = nil
+	r.raw[idx] = nil
 }
 
 type Stack interface {

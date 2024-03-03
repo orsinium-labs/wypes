@@ -241,13 +241,13 @@ func (v Pair[L, R]) Lower(s Store) {
 }
 
 type HostRef[T any] struct {
-	idx uint32
-	raw any
+	Raw   any
+	Index uint32
 }
 
 // Unwrap returns the wrapped value.
 func (v HostRef[T]) Unwrap() T {
-	return v.raw.(T)
+	return v.Raw.(T)
 }
 
 // ValueTypes implements [Value] interface.
@@ -257,16 +257,22 @@ func (HostRef[T]) ValueTypes() []ValueType {
 
 // Lift implements [Lift] interface.
 func (HostRef[T]) Lift(s Store) HostRef[T] {
-	idx := uint32(s.Stack.Pop())
+	index := uint32(s.Stack.Pop())
 	var def T
 	return HostRef[T]{
-		idx: idx,
-		raw: s.Refs.Get(idx, def),
+		Raw:   s.Refs.Get(index, def),
+		Index: index,
 	}
 }
 
 // Lower implements [Lower] interface.
 func (v HostRef[T]) Lower(s Store) {
-	s.Refs.Set(v.idx, v.raw)
-	s.Stack.Push(Raw(v.idx))
+	var index uint32
+	if v.Index == 0 {
+		index = s.Refs.Put(v.Raw)
+	} else {
+		index = v.Index
+		s.Refs.Set(v.Index, v.Raw)
+	}
+	s.Stack.Push(Raw(index))
 }
