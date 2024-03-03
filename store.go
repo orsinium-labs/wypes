@@ -62,6 +62,14 @@ func (r MapRefs) Set(idx uint32, val any) {
 
 func (r MapRefs) Put(val any) uint32 {
 	r.idx += 1
+
+	// skip already used cells
+	_, used := r.raw[r.idx]
+	for used {
+		r.idx += 1
+		_, used = r.raw[r.idx]
+	}
+
 	r.raw[r.idx] = val
 	return r.idx
 }
