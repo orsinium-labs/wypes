@@ -82,3 +82,29 @@ func (Time) Lift(s Store) Time {
 func (v Time) Lower(s Store) {
 	s.Stack.Push(Raw(time.Time(v).Unix()))
 }
+
+type Pair[L LiftLower[L], R LiftLower[R]] struct {
+	Left  L
+	Right R
+}
+
+func (p Pair[L, R]) ValueTypes() []ValueType {
+	r := make([]ValueType, 0, 2)
+	r = append(r, p.Left.ValueTypes()...)
+	r = append(r, p.Right.ValueTypes()...)
+	return r
+}
+
+func (Pair[L, R]) Lift(s Store) Pair[L, R] {
+	var l L
+	var r R
+	return Pair[L, R]{
+		Left:  l.Lift(s),
+		Right: r.Lift(s),
+	}
+}
+
+func (v Pair[L, R]) Lower(s Store) {
+	v.Left.Lower(s)
+	v.Right.Lower(s)
+}
