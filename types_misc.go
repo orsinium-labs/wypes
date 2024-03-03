@@ -1,6 +1,7 @@
 package wypes
 
 import (
+	"context"
 	"math"
 	"time"
 )
@@ -123,6 +124,20 @@ func (Time) Lift(s Store) Time {
 
 func (v Time) Lower(s Store) {
 	s.Stack.Push(Raw(time.Time(v).Unix()))
+}
+
+type Context struct{ ctx context.Context }
+
+func (c Context) Unwrap() context.Context {
+	return c.ctx
+}
+
+func (Context) ValueTypes() []ValueType {
+	return []ValueType{ValueTypeI64}
+}
+
+func (Context) Lift(s Store) Context {
+	return Context{ctx: s.Context}
 }
 
 type Pair[L LiftLower[L], R LiftLower[R]] struct {
