@@ -51,7 +51,7 @@ That's it! Now the wasm module can call the `env.add_i32` function.
 
 The library provides lots of useful types that you can use in your functions. Make sure to [check the docs](https://pkg.go.dev/github.com/orsinium-labs/wypes). A few highlights:
 
-1. Context provides access to the context.Context passed into the guest function call in wazero.
+1. [Context](https://pkg.go.dev/github.com/orsinium-labs/wypes#Context) provides access to the context.Context passed into the guest function call in wazero.
 1. [Store](https://pkg.go.dev/github.com/orsinium-labs/wypes#Store) provides access to all the state: memory, stack, references.
 1. [Duration](https://pkg.go.dev/github.com/orsinium-labs/wypes#Duration) and [Time](https://pkg.go.dev/github.com/orsinium-labs/wypes#Time) to pass time.Duration and time.Time (as UNIX timestamp).
 1. [HostRef](https://pkg.go.dev/github.com/orsinium-labs/wypes#HostRef) can hold a reference to the [Refs](https://pkg.go.dev/github.com/orsinium-labs/wypes#Refs) store of host objects.
