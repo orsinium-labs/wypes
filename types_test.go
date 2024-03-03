@@ -43,11 +43,44 @@ func TestRoundtrip(t *testing.T) {
 	t.Run("UInt32", testRoundtrip[wypes.UInt32])
 	t.Run("UInt64", testRoundtrip[wypes.UInt64])
 	t.Run("UInt", testRoundtrip[wypes.UInt])
+	t.Run("Byte", testRoundtrip[wypes.Byte])
+	t.Run("Rune", testRoundtrip[wypes.Rune])
 
 	t.Run("Float32", testRoundtrip[wypes.Float32])
 	t.Run("Float64", testRoundtrip[wypes.Float64])
 	t.Run("Duration", testRoundtrip[wypes.Duration])
 	t.Run("Time", testRoundtrip[wypes.Time])
+}
+
+func testRoundtripPair[T wypes.LiftLower[T]](t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	store := wypes.Store{Stack: stack}
+
+	// push the values to be checked on the stack
+	stack.Push(123)
+	stack.Push(79)
+	is.Equal(c, stack.Len(), 2)
+
+	// lift, stack should be empty
+	var i T
+	i = i.Lift(store)
+	is.Equal(c, stack.Len(), 0)
+
+	// lower, it should put the values on the stack
+	i.Lower(store)
+	is.Equal(c, stack.Len(), 2)
+
+	// pop from the stack and check the value
+	is.Equal(c, stack.Pop(), 123)
+	is.Equal(c, stack.Pop(), 79)
+	is.Equal(c, stack.Len(), 0)
+}
+
+func TestRoundtripPair(t *testing.T) {
+	t.Run("Complex64", testRoundtripPair[wypes.Complex64])
+	t.Run("Complex128", testRoundtripPair[wypes.Complex128])
+	t.Run("Pair", testRoundtripPair[wypes.Pair[wypes.Int16, wypes.Int32]])
 }
 
 // A static check that all primitive types can be implicitly cast from literals.

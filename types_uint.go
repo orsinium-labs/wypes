@@ -85,4 +85,4 @@ func (v UIntPtr) Lower(s Store) {
 }
 
 type Rune = UInt32
-type Byte = byte
+type Byte = UInt8
