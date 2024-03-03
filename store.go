@@ -17,6 +17,8 @@ const (
 	ValueTypeF32 ValueType = 0x7d
 	// ValueTypeF64 is a 64-bit floating point number.
 	ValueTypeF64 ValueType = 0x7c
+	// ValueTypeExternref is an externref type.
+	ValueTypeExternref ValueType = 0x6f
 )
 
 type Store struct {

@@ -10,6 +10,7 @@ import (
 	"github.com/tetratelabs/wazero/api"
 )
 
+// DefineWazero registers all the host modules in the given wazero runtime.
 func (ms Modules) DefineWazero(runtime wazero.Runtime) error {
 	for modName, funcs := range ms {
 		err := funcs.DefineWazero(runtime, modName)
@@ -20,6 +21,7 @@ func (ms Modules) DefineWazero(runtime wazero.Runtime) error {
 	return nil
 }
 
+// DefineWazero registers the host module in the given wazero runtime.
 func (m Module) DefineWazero(runtime wazero.Runtime, modName string) error {
 	var err error
 	mb := runtime.NewHostModuleBuilder(modName)

@@ -207,6 +207,10 @@ func (Context) Lift(s Store) Context {
 	return Context{ctx: s.Context}
 }
 
+// Pair wraps two values of arbitrary types.
+//
+// You can combine multiple pairs to pass more than 2 values at once.
+// All values are passed through the stack, not memory.
 type Pair[L LiftLower[L], R LiftLower[R]] struct {
 	Left  L
 	Right R
@@ -248,7 +252,7 @@ func (v HostRef[T]) Unwrap() T {
 
 // ValueTypes implements [Value] interface.
 func (HostRef[T]) ValueTypes() []ValueType {
-	return []ValueType{ValueTypeI32}
+	return []ValueType{ValueTypeExternref}
 }
 
 // Lift implements [Lift] interface.
