@@ -33,7 +33,7 @@ func run() error {
 			"add_i32": wypes.H2(addI32),
 		},
 	}
-	err := modules.DefineWazero(r)
+	err := modules.DefineWazero(r, nil)
 	if err != nil {
 		return fmt.Errorf("define host functions: %v", err)
 	}

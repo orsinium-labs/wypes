@@ -42,7 +42,7 @@ func run() error {
 			"print":    wypes.H1(hostPrint),
 		},
 	}
-	err := modules.DefineWazero(r)
+	err := modules.DefineWazero(r, nil)
 	if err != nil {
 		return fmt.Errorf("define host functions: %v", err)
 	}
