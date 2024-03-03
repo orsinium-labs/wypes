@@ -207,6 +207,17 @@ func (Context) Lift(s Store) Context {
 	return Context{ctx: s.Context}
 }
 
+// Void is a return type of a function that returns nothing.
+type Void struct{}
+
+// ValueTypes implements [Value] interface.
+func (Void) ValueTypes() []ValueType {
+	return []ValueType{}
+}
+
+// Lower implements [Lower] interface.
+func (Void) Lower(s Store) {}
+
 // Pair wraps two values of arbitrary types.
 //
 // You can combine multiple pairs to pass more than 2 values at once.
