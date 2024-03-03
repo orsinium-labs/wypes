@@ -16,11 +16,11 @@ func (Bool) Lift(s Store) Bool {
 }
 
 func (v Bool) Lower(s Store) {
-	r := 0
+	res := 0
 	if v {
-		r = 1
+		res = 1
 	}
-	s.Stack.Push(Raw(r))
+	s.Stack.Push(Raw(res))
 }
 
 type Float32 float32
@@ -51,8 +51,8 @@ func (Float64) Lift(s Store) Float64 {
 }
 
 func (v Float64) Lower(s Store) {
-	r := math.Float64bits(float64(v))
-	s.Stack.Push(Raw(r))
+	res := math.Float64bits(float64(v))
+	s.Stack.Push(Raw(res))
 }
 
 type Complex64 complex64
@@ -70,10 +70,10 @@ func (Complex64) Lift(s Store) Complex64 {
 }
 
 func (v Complex64) Lower(s Store) {
-	r := math.Float32bits(real(v))
-	i := math.Float32bits(imag(v))
-	s.Stack.Push(Raw(r))
-	s.Stack.Push(Raw(i))
+	vReal := math.Float32bits(real(v))
+	vImag := math.Float32bits(imag(v))
+	s.Stack.Push(Raw(vReal))
+	s.Stack.Push(Raw(vImag))
 }
 
 type Complex128 complex128
@@ -91,10 +91,10 @@ func (Complex128) Lift(s Store) Complex128 {
 }
 
 func (v Complex128) Lower(s Store) {
-	r := math.Float64bits(real(v))
-	i := math.Float64bits(imag(v))
-	s.Stack.Push(Raw(r))
-	s.Stack.Push(Raw(i))
+	vReal := math.Float64bits(real(v))
+	vImag := math.Float64bits(imag(v))
+	s.Stack.Push(Raw(vReal))
+	s.Stack.Push(Raw(vImag))
 }
 
 type Duration time.Duration
@@ -130,19 +130,19 @@ type Pair[L LiftLower[L], R LiftLower[R]] struct {
 	Right R
 }
 
-func (p Pair[L, R]) ValueTypes() []ValueType {
-	r := make([]ValueType, 0, 2)
-	r = append(r, p.Left.ValueTypes()...)
-	r = append(r, p.Right.ValueTypes()...)
-	return r
+func (v Pair[L, R]) ValueTypes() []ValueType {
+	types := make([]ValueType, 0, 2)
+	types = append(types, v.Left.ValueTypes()...)
+	types = append(types, v.Right.ValueTypes()...)
+	return types
 }
 
 func (Pair[L, R]) Lift(s Store) Pair[L, R] {
-	var l L
-	var r R
+	var left L
+	var right R
 	return Pair[L, R]{
-		Left:  l.Lift(s),
-		Right: r.Lift(s),
+		Left:  left.Lift(s),
+		Right: right.Lift(s),
 	}
 }
 
