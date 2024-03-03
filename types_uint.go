@@ -83,3 +83,6 @@ func (UIntPtr) Lift(s Store) UIntPtr {
 func (v UIntPtr) Lower(s Store) {
 	s.Stack.Push(Raw(v))
 }
+
+type Rune = UInt32
+type Byte = byte
