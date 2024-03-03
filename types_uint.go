@@ -2,6 +2,10 @@ package wypes
 
 type UInt8 uint8
 
+func (v UInt8) Unwrap() uint8 {
+	return uint8(v)
+}
+
 func (UInt8) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI32}
 }
@@ -15,6 +19,10 @@ func (v UInt8) Lower(s Store) {
 }
 
 type UInt16 uint16
+
+func (v UInt16) Unwrap() uint16 {
+	return uint16(v)
+}
 
 func (UInt16) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI32}
@@ -30,6 +38,10 @@ func (v UInt16) Lower(s Store) {
 
 type UInt32 uint32
 
+func (v UInt32) Unwrap() uint32 {
+	return uint32(v)
+}
+
 func (UInt32) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI32}
 }
@@ -43,6 +55,10 @@ func (v UInt32) Lower(s Store) {
 }
 
 type UInt64 uint64
+
+func (v UInt64) Unwrap() uint64 {
+	return uint64(v)
+}
 
 func (UInt64) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI64}
@@ -58,6 +74,10 @@ func (v UInt64) Lower(s Store) {
 
 type UInt uint
 
+func (v UInt) Unwrap() uint {
+	return uint(v)
+}
+
 func (UInt) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI64}
 }
@@ -71,6 +91,10 @@ func (v UInt) Lower(s Store) {
 }
 
 type UIntPtr uintptr
+
+func (v UIntPtr) Unwrap() uintptr {
+	return uintptr(v)
+}
 
 func (UIntPtr) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI64}

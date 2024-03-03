@@ -8,6 +8,10 @@ import (
 
 type Bool bool
 
+func (v Bool) Unwrap() bool {
+	return bool(v)
+}
+
 func (Bool) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI32}
 }
@@ -26,6 +30,10 @@ func (v Bool) Lower(s Store) {
 
 type Float32 float32
 
+func (v Float32) Unwrap() float32 {
+	return float32(v)
+}
+
 func (Float32) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeF32}
 }
@@ -42,6 +50,10 @@ func (v Float32) Lower(s Store) {
 
 type Float64 float64
 
+func (v Float64) Unwrap() float64 {
+	return float64(v)
+}
+
 func (Float64) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeF64}
 }
@@ -57,6 +69,10 @@ func (v Float64) Lower(s Store) {
 }
 
 type Complex64 complex64
+
+func (v Complex64) Unwrap() complex64 {
+	return complex64(v)
+}
 
 func (Complex64) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeF32, ValueTypeF32}
@@ -79,6 +95,10 @@ func (v Complex64) Lower(s Store) {
 
 type Complex128 complex128
 
+func (v Complex128) Unwrap() complex128 {
+	return complex128(v)
+}
+
 func (Complex128) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeF64, ValueTypeF64}
 }
@@ -100,6 +120,10 @@ func (v Complex128) Lower(s Store) {
 
 type Duration time.Duration
 
+func (v Duration) Unwrap() time.Duration {
+	return time.Duration(v)
+}
+
 func (Duration) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI64}
 }
@@ -113,6 +137,10 @@ func (v Duration) Lower(s Store) {
 }
 
 type Time time.Time
+
+func (v Time) Unwrap() time.Time {
+	return time.Time(v)
+}
 
 func (Time) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI64}
@@ -128,12 +156,12 @@ func (v Time) Lower(s Store) {
 
 type Context struct{ ctx context.Context }
 
-func (c Context) Unwrap() context.Context {
-	return c.ctx
+func (v Context) Unwrap() context.Context {
+	return v.ctx
 }
 
 func (Context) ValueTypes() []ValueType {
-	return []ValueType{ValueTypeI64}
+	return []ValueType{}
 }
 
 func (Context) Lift(s Store) Context {

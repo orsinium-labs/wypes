@@ -2,6 +2,10 @@ package wypes
 
 type Bytes []byte
 
+func (v Bytes) Unwrap() []byte {
+	return []byte(v)
+}
+
 func (v Bytes) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI32, ValueTypeI32}
 }
@@ -14,6 +18,10 @@ func (Bytes) Lift(s Store) Bytes {
 }
 
 type String string
+
+func (v String) Unwrap() string {
+	return string(v)
+}
 
 func (v String) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI32, ValueTypeI32}

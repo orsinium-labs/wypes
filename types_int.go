@@ -2,6 +2,10 @@ package wypes
 
 type Int8 int8
 
+func (v Int8) Unwrap() int8 {
+	return int8(v)
+}
+
 func (Int8) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI32}
 }
@@ -15,6 +19,10 @@ func (v Int8) Lower(s Store) {
 }
 
 type Int16 int16
+
+func (v Int16) Unwrap() int16 {
+	return int16(v)
+}
 
 func (Int16) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI32}
@@ -30,6 +38,10 @@ func (v Int16) Lower(s Store) {
 
 type Int32 int32
 
+func (v Int32) Unwrap() int32 {
+	return int32(v)
+}
+
 func (Int32) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI32}
 }
@@ -44,6 +56,10 @@ func (v Int32) Lower(s Store) {
 
 type Int64 int64
 
+func (v Int64) Unwrap() int64 {
+	return int64(v)
+}
+
 func (Int64) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI64}
 }
@@ -57,6 +73,10 @@ func (v Int64) Lower(s Store) {
 }
 
 type Int int
+
+func (v Int) Unwrap() int {
+	return int(v)
+}
 
 func (Int) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI64}
