@@ -70,7 +70,8 @@ func H1[A Lift[A], Z Lower](
 		Params:  []Value{a},
 		Results: []Value{z},
 		Call: func(s Store) {
-			fn(a.Lift(s)).Lower(s)
+			a := a.Lift(s)
+			fn(a).Lower(s)
 		},
 	}
 }
@@ -86,7 +87,9 @@ func H2[A Lift[A], B Lift[B], Z Lower](
 		Params:  []Value{a, b},
 		Results: []Value{z},
 		Call: func(s Store) {
-			fn(a.Lift(s), b.Lift(s)).Lower(s)
+			b := b.Lift(s)
+			a := a.Lift(s)
+			fn(a, b).Lower(s)
 		},
 	}
 }
@@ -103,7 +106,10 @@ func H3[A Lift[A], B Lift[B], C Lift[C], Z Lower](
 		Params:  []Value{a, b, c},
 		Results: []Value{z},
 		Call: func(s Store) {
-			fn(a.Lift(s), b.Lift(s), c.Lift(s)).Lower(s)
+			c := c.Lift(s)
+			b := b.Lift(s)
+			a := a.Lift(s)
+			fn(a, b, c).Lower(s)
 		},
 	}
 }
@@ -121,7 +127,11 @@ func H4[A Lift[A], B Lift[B], C Lift[C], D Lift[D], Z Lower](
 		Params:  []Value{a, b, c, d},
 		Results: []Value{z},
 		Call: func(s Store) {
-			fn(a.Lift(s), b.Lift(s), c.Lift(s), d.Lift(s)).Lower(s)
+			d := d.Lift(s)
+			c := c.Lift(s)
+			b := b.Lift(s)
+			a := a.Lift(s)
+			fn(a, b, c, d).Lower(s)
 		},
 	}
 }
@@ -140,7 +150,12 @@ func H5[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], Z Lower](
 		Params:  []Value{a, b, c, d, e},
 		Results: []Value{z},
 		Call: func(s Store) {
-			fn(a.Lift(s), b.Lift(s), c.Lift(s), d.Lift(s), e.Lift(s)).Lower(s)
+			e := e.Lift(s)
+			d := d.Lift(s)
+			c := c.Lift(s)
+			b := b.Lift(s)
+			a := a.Lift(s)
+			fn(a, b, c, d, e).Lower(s)
 		},
 	}
 }
@@ -160,7 +175,13 @@ func H6[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], Z Lowe
 		Params:  []Value{a, b, c, d, e, f},
 		Results: []Value{z},
 		Call: func(s Store) {
-			fn(a.Lift(s), b.Lift(s), c.Lift(s), d.Lift(s), e.Lift(s), f.Lift(s)).Lower(s)
+			f := f.Lift(s)
+			e := e.Lift(s)
+			d := d.Lift(s)
+			c := c.Lift(s)
+			b := b.Lift(s)
+			a := a.Lift(s)
+			fn(a, b, c, d, e, f).Lower(s)
 		},
 	}
 }
@@ -181,7 +202,14 @@ func H7[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lift
 		Params:  []Value{a, b, c, d, e, f, g},
 		Results: []Value{z},
 		Call: func(s Store) {
-			fn(a.Lift(s), b.Lift(s), c.Lift(s), d.Lift(s), e.Lift(s), f.Lift(s), g.Lift(s)).Lower(s)
+			g := g.Lift(s)
+			f := f.Lift(s)
+			e := e.Lift(s)
+			d := d.Lift(s)
+			c := c.Lift(s)
+			b := b.Lift(s)
+			a := a.Lift(s)
+			fn(a, b, c, d, e, f, g).Lower(s)
 		},
 	}
 }
@@ -205,7 +233,15 @@ func H8[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lift
 		Params:  []Value{a, b, c, d, e, f, g, h},
 		Results: []Value{z},
 		Call: func(s Store) {
-			fn(a.Lift(s), b.Lift(s), c.Lift(s), d.Lift(s), e.Lift(s), f.Lift(s), g.Lift(s), h.Lift(s)).Lower(s)
+			h := h.Lift(s)
+			g := g.Lift(s)
+			f := f.Lift(s)
+			e := e.Lift(s)
+			d := d.Lift(s)
+			c := c.Lift(s)
+			b := b.Lift(s)
+			a := a.Lift(s)
+			fn(a, b, c, d, e, f, g, h).Lower(s)
 		},
 	}
 }

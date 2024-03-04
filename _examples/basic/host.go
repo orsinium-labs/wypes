@@ -15,7 +15,7 @@ import (
 var source []byte
 
 func addI32(a wypes.Int32, b wypes.Int32) wypes.Int32 {
-	return a + b
+	return a - b
 }
 
 func main() {
