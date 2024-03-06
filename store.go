@@ -61,6 +61,41 @@ type Memory interface {
 	Write(offset Addr, v []byte) bool
 }
 
+// Wraps a slice of bytes to be used as [Memory].
+type SliceMemory []byte
+
+// Create new memory instance that internally stores data in a slice.
+func NewSliceMemory(size int) *SliceMemory {
+	s := make(SliceMemory, size)
+	return &s
+}
+
+// Read implements the [Memory] interface.
+func (m *SliceMemory) Read(offset Addr, count uint32) ([]byte, bool) {
+	if !m.hasSize(offset, uint64(count)) {
+		return nil, false
+	}
+	return (*m)[offset : offset+count : offset+count], true
+}
+
+// Write implements the [Memory] interface.
+func (m *SliceMemory) Write(offset Addr, v []byte) bool {
+	if !m.hasSize(offset, uint64(len(v))) {
+		return false
+	}
+	copy((*m)[offset:], v)
+	return true
+}
+
+// hasSize returns true if Len is sufficient for byteCount at the given offset.
+func (m *SliceMemory) hasSize(offset uint32, byteCount uint64) bool {
+	return uint64(offset)+byteCount <= uint64(len(*m)) // uint64 prevents overflow on add
+}
+
+func (s *SliceMemory) Len() int {
+	return len(*s)
+}
+
 // Refs holds references to Go values that you want to reference from wasm using [HostRef].
 type Refs interface {
 	Get(idx uint32, def any) (any, bool)
