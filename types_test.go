@@ -103,3 +103,61 @@ func TestAssignLiteral(t *testing.T) {
 	var _ wypes.Complex128 = 3.4 + 1.5i
 	var _ wypes.Bool = true
 }
+
+func TestString_Lift(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	memory := wypes.NewSliceMemory(40)
+	ok := memory.Write(3, []byte("hello!"))
+	is.True(c, ok)
+	store := wypes.Store{Stack: stack, Memory: memory}
+	stack.Push(3) // offset
+	stack.Push(6) // len
+	var typ wypes.String
+	val := typ.Lift(store)
+	is.Equal(c, val.Unwrap(), "hello!")
+}
+
+func TestString_Lower(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	memory := wypes.NewSliceMemory(40)
+	store := wypes.Store{Stack: stack, Memory: memory}
+
+	val1 := wypes.String{
+		Offset: 3,
+		Raw:    "hello!",
+	}
+	val1.Lower(store)
+	val2 := val1.Lift(store)
+	is.Equal(c, val2.Unwrap(), "hello!")
+}
+
+func TestBytes_Lift(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	memory := wypes.NewSliceMemory(40)
+	ok := memory.Write(3, []byte("hello!"))
+	is.True(c, ok)
+	store := wypes.Store{Stack: stack, Memory: memory}
+	stack.Push(3) // offset
+	stack.Push(6) // len
+	var typ wypes.Bytes
+	val := typ.Lift(store)
+	is.SliceEqual(c, val.Unwrap(), []byte("hello!"))
+}
+
+func TestBytes_Lower(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	memory := wypes.NewSliceMemory(40)
+	store := wypes.Store{Stack: stack, Memory: memory}
+
+	val1 := wypes.Bytes{
+		Offset: 3,
+		Raw:    []byte("hello!"),
+	}
+	val1.Lower(store)
+	val2 := val1.Lift(store)
+	is.SliceEqual(c, val2.Unwrap(), []byte("hello!"))
+}

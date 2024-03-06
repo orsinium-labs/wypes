@@ -24,8 +24,8 @@ func (v Bytes) ValueTypes() []ValueType {
 
 // Lift implements [Lift] interface.
 func (Bytes) Lift(s Store) Bytes {
-	offset := uint32(s.Stack.Pop())
 	size := uint32(s.Stack.Pop())
+	offset := uint32(s.Stack.Pop())
 	raw, _ := s.Memory.Read(offset, size)
 	return Bytes{Offset: offset, Raw: raw}
 }
@@ -62,9 +62,12 @@ func (v String) ValueTypes() []ValueType {
 
 // Lift implements [Lift] interface.
 func (String) Lift(s Store) String {
-	offset := uint32(s.Stack.Pop())
 	size := uint32(s.Stack.Pop())
-	raw, _ := s.Memory.Read(offset, size)
+	offset := uint32(s.Stack.Pop())
+	raw, ok := s.Memory.Read(offset, size)
+	if !ok {
+		return String{Offset: 0, Raw: "R"}
+	}
 	return String{Offset: offset, Raw: string(raw)}
 }
 
