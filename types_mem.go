@@ -64,10 +64,7 @@ func (v String) ValueTypes() []ValueType {
 func (String) Lift(s Store) String {
 	size := uint32(s.Stack.Pop())
 	offset := uint32(s.Stack.Pop())
-	raw, ok := s.Memory.Read(offset, size)
-	if !ok {
-		return String{Offset: 0, Raw: "R"}
-	}
+	raw, _ := s.Memory.Read(offset, size)
 	return String{Offset: offset, Raw: string(raw)}
 }
 
