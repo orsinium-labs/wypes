@@ -149,9 +149,10 @@ func TestBytes_Lift(t *testing.T) {
 
 func TestBytes_Lower(t *testing.T) {
 	c := is.NewRelaxed(t)
-	stack := wypes.NewSliceStack(4)
-	memory := wypes.NewSliceMemory(40)
-	store := wypes.Store{Stack: stack, Memory: memory}
+	store := wypes.Store{
+		Stack:  wypes.NewSliceStack(4),
+		Memory: wypes.NewSliceMemory(40),
+	}
 
 	val1 := wypes.Bytes{
 		Offset: 3,
@@ -160,4 +161,23 @@ func TestBytes_Lower(t *testing.T) {
 	val1.Lower(store)
 	val2 := val1.Lift(store)
 	is.SliceEqual(c, val2.Unwrap(), []byte("hello!"))
+}
+
+type user struct {
+	name string
+}
+
+func TestHostRef_Lower(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	store := wypes.Store{
+		Stack: stack,
+		Refs:  wypes.NewMapRefs(),
+	}
+	val1 := wypes.HostRef[user]{Raw: user{"aragorn"}}
+	val2 := wypes.HostRef[user]{Raw: user{"gandalf"}}
+	val1.Lower(store)
+	val2.Lower(store)
+	val3 := val2.Lift(store)
+	is.Equal(c, val3.Unwrap(), user{"gandalf"})
 }
