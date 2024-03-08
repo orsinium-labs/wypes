@@ -264,14 +264,14 @@ func (v Pair[L, R]) Lower(s Store) {
 // [HostRef.Drop] method. After that, the reference is removed from [Refs] in the [Store]
 // and will be eventually collected by GC.
 type HostRef[T any] struct {
-	Raw   any
-	Index uint32
+	Raw   T
+	index uint32
 	refs  Refs
 }
 
 // Unwrap returns the wrapped value.
 func (v HostRef[T]) Unwrap() T {
-	return v.Raw.(T)
+	return v.Raw
 }
 
 // Drop remove the reference from [Refs] in [Store].
@@ -280,7 +280,7 @@ func (v HostRef[T]) Unwrap() T {
 // (passed as an argument into a host-defined function).
 func (v HostRef[T]) Drop() {
 	if v.refs != nil {
-		v.refs.Drop(v.Index)
+		v.refs.Drop(v.index)
 	}
 }
 
@@ -295,8 +295,8 @@ func (HostRef[T]) Lift(s Store) HostRef[T] {
 	var def T
 	raw, _ := s.Refs.Get(index, def)
 	return HostRef[T]{
-		Raw:   raw,
-		Index: index,
+		Raw:   raw.(T),
+		index: index,
 		refs:  s.Refs,
 	}
 }
@@ -304,11 +304,11 @@ func (HostRef[T]) Lift(s Store) HostRef[T] {
 // Lower implements [Lower] interface.
 func (v HostRef[T]) Lower(s Store) {
 	var index uint32
-	if v.Index == 0 {
+	if v.index == 0 {
 		index = s.Refs.Put(v.Raw)
 	} else {
-		index = v.Index
-		s.Refs.Set(v.Index, v.Raw)
+		index = v.index
+		s.Refs.Set(v.index, v.Raw)
 	}
 	s.Stack.Push(Raw(index))
 }
