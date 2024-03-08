@@ -251,14 +251,37 @@ func (v Pair[L, R]) Lower(s Store) {
 	v.Right.Lower(s)
 }
 
+// HostRef is a reference to a Go object stored on the host side in [Refs].
+//
+// References created this way are never collected by GC because there is no way
+// to know if the wasm module still needs it. So it is important to explicitly clean
+// references by calling [HostRef.Drop].
+//
+// A common usage pattern is to create a reference in one host-defined function,
+// return it into the wasm module, and then clean it up in another host-defined function
+// caled from wasm when the guest doesn't need the value anymore.
+// In this scenario, the latter function accepts HostRef as an argument and calls its
+// [HostRef.Drop] method. After that, the reference is removed from [Refs] in the [Store]
+// and will be eventually collected by GC.
 type HostRef[T any] struct {
 	Raw   any
 	Index uint32
+	refs  Refs
 }
 
 // Unwrap returns the wrapped value.
 func (v HostRef[T]) Unwrap() T {
 	return v.Raw.(T)
+}
+
+// Drop remove the reference from [Refs] in [Store].
+//
+// Can be called only on lifted references
+// (passed as an argument into a host-defined function).
+func (v HostRef[T]) Drop() {
+	if v.refs != nil {
+		v.refs.Drop(v.Index)
+	}
 }
 
 // ValueTypes implements [Value] interface.
@@ -274,6 +297,7 @@ func (HostRef[T]) Lift(s Store) HostRef[T] {
 	return HostRef[T]{
 		Raw:   raw,
 		Index: index,
+		refs:  s.Refs,
 	}
 }
 

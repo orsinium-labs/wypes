@@ -101,22 +101,23 @@ type Refs interface {
 	Get(idx uint32, def any) (any, bool)
 	Set(idx uint32, val any)
 	Put(val any) uint32
+	Drop(idx uint32)
 }
 
 // MapRefs is a simple [Refs] implementation powered by a map.
 //
 // Must be constructed with [NewMapRefs].
 type MapRefs struct {
-	raw map[uint32]any
+	Raw map[uint32]any
 	idx uint32
 }
 
 func NewMapRefs() MapRefs {
-	return MapRefs{raw: make(map[uint32]any, 0)}
+	return MapRefs{Raw: make(map[uint32]any)}
 }
 
 func (r MapRefs) Get(idx uint32, def any) (any, bool) {
-	val, found := r.raw[idx]
+	val, found := r.Raw[idx]
 	if !found {
 		return def, false
 	}
@@ -124,25 +125,25 @@ func (r MapRefs) Get(idx uint32, def any) (any, bool) {
 }
 
 func (r MapRefs) Set(idx uint32, val any) {
-	r.raw[idx] = val
+	r.Raw[idx] = val
 }
 
 func (r MapRefs) Put(val any) uint32 {
 	r.idx += 1
 
 	// skip already used cells
-	_, used := r.raw[r.idx]
+	_, used := r.Raw[r.idx]
 	for used {
 		r.idx += 1
-		_, used = r.raw[r.idx]
+		_, used = r.Raw[r.idx]
 	}
 
-	r.raw[r.idx] = val
+	r.Raw[r.idx] = val
 	return r.idx
 }
 
 func (r MapRefs) Drop(idx uint32) {
-	r.raw[idx] = nil
+	delete(r.Raw, idx)
 }
 
 type Stack interface {
