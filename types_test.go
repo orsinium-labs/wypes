@@ -181,3 +181,19 @@ func TestHostRef_Lower(t *testing.T) {
 	val3 := val2.Lift(store)
 	is.Equal(c, val3.Unwrap(), user{"gandalf"})
 }
+
+func TestHostRef_Drop(t *testing.T) {
+	c := is.NewRelaxed(t)
+	refs := wypes.NewMapRefs()
+	store := wypes.Store{
+		Stack: wypes.NewSliceStack(4),
+		Refs:  refs,
+	}
+	val1 := wypes.HostRef[user]{Raw: user{"aragorn"}}
+	val1.Lower(store)
+	val2 := val1.Lift(store)
+	is.Equal(c, val2.Unwrap(), user{"aragorn"})
+	is.Equal(c, len(refs.Raw), 1)
+	val2.Drop()
+	is.Equal(c, len(refs.Raw), 0)
+}

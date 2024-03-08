@@ -251,14 +251,37 @@ func (v Pair[L, R]) Lower(s Store) {
 	v.Right.Lower(s)
 }
 
+// HostRef is a reference to a Go object stored on the host side in [Refs].
+//
+// References created this way are never collected by GC because there is no way
+// to know if the wasm module still needs it. So it is important to explicitly clean
+// references by calling [HostRef.Drop].
+//
+// A common usage pattern is to create a reference in one host-defined function,
+// return it into the wasm module, and then clean it up in another host-defined function
+// caled from wasm when the guest doesn't need the value anymore.
+// In this scenario, the latter function accepts HostRef as an argument and calls its
+// [HostRef.Drop] method. After that, the reference is removed from [Refs] in the [Store]
+// and will be eventually collected by GC.
 type HostRef[T any] struct {
-	Raw   any
-	Index uint32
+	Raw   T
+	index uint32
+	refs  Refs
 }
 
 // Unwrap returns the wrapped value.
 func (v HostRef[T]) Unwrap() T {
-	return v.Raw.(T)
+	return v.Raw
+}
+
+// Drop remove the reference from [Refs] in [Store].
+//
+// Can be called only on lifted references
+// (passed as an argument into a host-defined function).
+func (v HostRef[T]) Drop() {
+	if v.refs != nil {
+		v.refs.Drop(v.index)
+	}
 }
 
 // ValueTypes implements [Value] interface.
@@ -272,19 +295,20 @@ func (HostRef[T]) Lift(s Store) HostRef[T] {
 	var def T
 	raw, _ := s.Refs.Get(index, def)
 	return HostRef[T]{
-		Raw:   raw,
-		Index: index,
+		Raw:   raw.(T),
+		index: index,
+		refs:  s.Refs,
 	}
 }
 
 // Lower implements [Lower] interface.
 func (v HostRef[T]) Lower(s Store) {
 	var index uint32
-	if v.Index == 0 {
+	if v.index == 0 {
 		index = s.Refs.Put(v.Raw)
 	} else {
-		index = v.Index
-		s.Refs.Set(v.Index, v.Raw)
+		index = v.index
+		s.Refs.Set(v.index, v.Raw)
 	}
 	s.Stack.Push(Raw(index))
 }
