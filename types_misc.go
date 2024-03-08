@@ -286,7 +286,7 @@ func (v HostRef[T]) Drop() {
 
 // ValueTypes implements [Value] interface.
 func (HostRef[T]) ValueTypes() []ValueType {
-	return []ValueType{ValueTypeExternref}
+	return []ValueType{ValueTypeI32}
 }
 
 // Lift implements [Lift] interface.
