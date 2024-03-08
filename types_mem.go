@@ -26,13 +26,19 @@ func (v Bytes) ValueTypes() []ValueType {
 func (Bytes) Lift(s Store) Bytes {
 	size := uint32(s.Stack.Pop())
 	offset := uint32(s.Stack.Pop())
-	raw, _ := s.Memory.Read(offset, size)
+	raw, ok := s.Memory.Read(offset, size)
+	if !ok {
+		s.Error = ErrMemRead
+	}
 	return Bytes{Offset: offset, Raw: raw}
 }
 
 // Lower implements [Lower] interface.
 func (v Bytes) Lower(s Store) {
-	_ = s.Memory.Write(v.Offset, v.Raw)
+	ok := s.Memory.Write(v.Offset, v.Raw)
+	if !ok {
+		s.Error = ErrMemWrite
+	}
 	size := len(v.Raw)
 	s.Stack.Push(Raw(v.Offset))
 	s.Stack.Push(Raw(size))
@@ -64,13 +70,19 @@ func (v String) ValueTypes() []ValueType {
 func (String) Lift(s Store) String {
 	size := uint32(s.Stack.Pop())
 	offset := uint32(s.Stack.Pop())
-	raw, _ := s.Memory.Read(offset, size)
+	raw, ok := s.Memory.Read(offset, size)
+	if !ok {
+		s.Error = ErrMemRead
+	}
 	return String{Offset: offset, Raw: string(raw)}
 }
 
 // Lower implements [Lower] interface.
 func (v String) Lower(s Store) {
-	_ = s.Memory.Write(v.Offset, []byte(v.Raw))
+	ok := s.Memory.Write(v.Offset, []byte(v.Raw))
+	if !ok {
+		s.Error = ErrMemWrite
+	}
 	size := len(v.Raw)
 	s.Stack.Push(Raw(v.Offset))
 	s.Stack.Push(Raw(size))

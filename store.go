@@ -38,6 +38,9 @@ type Store struct {
 
 	// Context can be retrieved by the [Context] type.
 	Context context.Context
+
+	// Error holds the latest error that happened during [Lift] or [Lower].
+	Error error
 }
 
 // ValueTypes implements [Value] interface.
