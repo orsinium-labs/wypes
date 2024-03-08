@@ -295,10 +295,15 @@ func (HostRef[T]) Lift(s Store) HostRef[T] {
 	var def T
 	raw, found := s.Refs.Get(index, def)
 	if !found {
-		s.Errors = append(s.Errors, ErrRefNotFound)
+		s.Error = ErrRefNotFound
+	}
+	cast, ok := raw.(T)
+	if found && !ok {
+		s.Error = ErrRefCast
+		cast = def
 	}
 	return HostRef[T]{
-		Raw:   raw.(T),
+		Raw:   cast,
 		index: index,
 		refs:  s.Refs,
 	}

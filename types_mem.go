@@ -28,7 +28,7 @@ func (Bytes) Lift(s Store) Bytes {
 	offset := uint32(s.Stack.Pop())
 	raw, ok := s.Memory.Read(offset, size)
 	if !ok {
-		s.Errors = append(s.Errors, ErrMemRead)
+		s.Error = ErrMemRead
 	}
 	return Bytes{Offset: offset, Raw: raw}
 }
@@ -37,7 +37,7 @@ func (Bytes) Lift(s Store) Bytes {
 func (v Bytes) Lower(s Store) {
 	ok := s.Memory.Write(v.Offset, v.Raw)
 	if !ok {
-		s.Errors = append(s.Errors, ErrMemWrite)
+		s.Error = ErrMemWrite
 	}
 	size := len(v.Raw)
 	s.Stack.Push(Raw(v.Offset))
@@ -72,7 +72,7 @@ func (String) Lift(s Store) String {
 	offset := uint32(s.Stack.Pop())
 	raw, ok := s.Memory.Read(offset, size)
 	if !ok {
-		s.Errors = append(s.Errors, ErrMemRead)
+		s.Error = ErrMemRead
 	}
 	return String{Offset: offset, Raw: string(raw)}
 }
@@ -81,7 +81,7 @@ func (String) Lift(s Store) String {
 func (v String) Lower(s Store) {
 	ok := s.Memory.Write(v.Offset, []byte(v.Raw))
 	if !ok {
-		s.Errors = append(s.Errors, ErrMemWrite)
+		s.Error = ErrMemWrite
 	}
 	size := len(v.Raw)
 	s.Stack.Push(Raw(v.Offset))
