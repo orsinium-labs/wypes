@@ -1,9 +1,7 @@
 package wypes
 
 import (
-	"bytes"
 	"encoding/binary"
-	"unsafe"
 )
 
 // Bytes wraps a slice of bytes.
@@ -94,13 +92,12 @@ func (v String) Lower(s Store) {
 	s.Stack.Push(Raw(size))
 }
 
-// List wraps a Go slice of any type.
-// This is the implementation required for the host side of the component model [cm.List] type.
+// List wraps a Go slice of any type that implements the [MemoryLiftLower] interface.
+// This is the implementation required for the host side of component model functions that have [cm.List] parameters.
 // See https://github.com/bytecodealliance/wasm-tools-go/blob/main/cm/list.go
-type List[T int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64 | float32 | float64] struct {
-	Offset  uint32
-	DataPtr uint32
-	Raw     []T
+type List[T MemoryLiftLower[T]] struct {
+	Offset uint32
+	Raw    []T
 }
 
 // Unwrap returns the wrapped value.
@@ -110,16 +107,157 @@ func (v List[T]) Unwrap() []T {
 
 // ValueTypes implements [Value] interface.
 func (v List[T]) ValueTypes() []ValueType {
-	return []ValueType{ValueTypeI32}
+	return []ValueType{ValueTypeI32, ValueTypeI32}
 }
 
 // Lift implements [Lift] interface.
 func (List[T]) Lift(s Store) List[T] {
+	size := uint32(s.Stack.Pop())
+	offset := uint32(s.Stack.Pop())
+
+	// empty list
+	if size == 0 {
+		return List[T]{Offset: offset}
+	}
+
+	data := make([]T, size)
+	ptr := offset
+	var length uint32
+	for i := uint32(0); i < size; i++ {
+		data[i], length = T.MemoryLift(data[0], s, ptr)
+		ptr += length
+	}
+
+	return List[T]{Offset: offset, Raw: data}
+}
+
+// Lower implements [Lower] interface.
+// See https://github.com/WebAssembly/component-model/blob/main/design/mvp/CanonicalABI.md#flattening
+// In theory we should re-allocate enough linear memory into which to write the actual data.
+func (v List[T]) Lower(s Store) {
+	size := len(v.Raw)
+
+	ptr := v.Offset
+	for i := uint32(0); i < uint32(size); i++ {
+		length := v.Raw[i].MemoryLower(s, ptr)
+		ptr += length
+	}
+
+	s.Stack.Push(Raw(v.Offset))
+	s.Stack.Push(Raw(size))
+}
+
+// ListStrings wraps a Go slice of strings.
+// This is the implementation required for the host side of component model functions that have [cm.List] parameters.
+// See https://github.com/bytecodealliance/wasm-tools-go/blob/main/cm/list.go
+type ListStrings struct {
+	Offset uint32
+	Raw    []string
+}
+
+// Unwrap returns the wrapped value.
+func (v ListStrings) Unwrap() []string {
+	return v.Raw
+}
+
+// ValueTypes implements [Value] interface.
+func (v ListStrings) ValueTypes() []ValueType {
+	return []ValueType{ValueTypeI32, ValueTypeI32}
+}
+
+// Lift implements [Lift] interface.
+func (ListStrings) Lift(s Store) ListStrings {
+	size := uint32(s.Stack.Pop())
+	offset := uint32(s.Stack.Pop())
+
+	// empty list
+	if size == 0 {
+		return ListStrings{Offset: offset}
+	}
+
+	data := make([]string, size)
+
+	for i := uint32(0); i < size; i++ {
+		buf, ok := s.Memory.Read(offset+i*8, 8)
+		if !ok {
+			s.Error = ErrMemRead
+			return ListStrings{Offset: offset, Raw: data}
+		}
+
+		ptr := binary.LittleEndian.Uint32(buf[0:])
+		sz := binary.LittleEndian.Uint32(buf[4:])
+
+		raw, ok := s.Memory.Read(ptr, sz)
+		if !ok {
+			s.Error = ErrMemRead
+			return ListStrings{Offset: offset, Raw: data}
+		}
+
+		data[i] = string(raw)
+	}
+
+	return ListStrings{Offset: offset, Raw: data}
+}
+
+// Lower implements [Lower] interface.
+// See https://github.com/WebAssembly/component-model/blob/main/design/mvp/CanonicalABI.md#flattening
+// In theory we should re-allocate enough linear memory into which to write the actual data.
+func (v ListStrings) Lower(s Store) {
+	size := uint32(len(v.Raw))
+	plen := size * 8
+
+	for i := uint32(0); i < size; i++ {
+		ptrdata := make([]byte, 8)
+		binary.LittleEndian.PutUint32(ptrdata[0:], v.Offset+i*8+plen)
+		binary.LittleEndian.PutUint32(ptrdata[4:], uint32(len(v.Raw[i])))
+
+		ok := s.Memory.Write(v.Offset+i*8, ptrdata)
+		if !ok {
+			s.Error = ErrMemRead
+			return
+		}
+	}
+
+	for i, str := range v.Raw {
+		ptr := v.Offset + plen + uint32(i)*8
+
+		ok := s.Memory.Write(ptr, []byte(str))
+		if !ok {
+			s.Error = ErrMemRead
+			return
+		}
+	}
+
+	s.Stack.Push(Raw(v.Offset))
+	s.Stack.Push(Raw(size))
+}
+
+// ReturnList wraps a Go slice of any type that supports the [MemoryLiftLower] interface so it can be returned as a List.
+// This is the implementation required for the host side of component model functions that return a *[cm.List] type.
+// See https://github.com/bytecodealliance/wasm-tools-go/blob/main/cm/list.go
+type ReturnList[T MemoryLiftLower[T]] struct {
+	Offset  uint32
+	DataPtr uint32
+	Raw     []T
+}
+
+// Unwrap returns the wrapped value.
+func (v ReturnList[T]) Unwrap() []T {
+	return v.Raw
+}
+
+// ValueTypes implements [Value] interface.
+func (v ReturnList[T]) ValueTypes() []ValueType {
+	return []ValueType{ValueTypeI32}
+}
+
+// Lift implements [Lift] interface.
+func (ReturnList[T]) Lift(s Store) ReturnList[T] {
 	offset := uint32(s.Stack.Pop())
 	buf, ok := s.Memory.Read(offset, 8)
 	if !ok {
 		s.Error = ErrMemRead
-		return List[T]{}
+		return ReturnList[T]{}
 	}
 
 	ptr := binary.LittleEndian.Uint32(buf[0:])
@@ -127,34 +265,36 @@ func (List[T]) Lift(s Store) List[T] {
 
 	// empty list, probably a return value to be filled in later.
 	if ptr == 0 || sz == 0 {
-		return List[T]{Offset: offset}
+		return ReturnList[T]{Offset: offset}
 	}
 
-	raw, ok := s.Memory.Read(ptr, uint32(sz)*uint32(unsafe.Sizeof(T(0))))
-	if !ok {
-		s.Error = ErrMemRead
-		return List[T]{Offset: offset}
-	}
-
-	r := bytes.NewReader(raw)
 	data := make([]T, sz)
-	binary.Read(r, binary.LittleEndian, data)
+	p := ptr
+	var length uint32
+	for i := uint32(0); i < sz; i++ {
+		data[i], length = T.MemoryLift(data[0], s, p)
+		p += length
+	}
 
-	return List[T]{Offset: offset, DataPtr: ptr, Raw: data}
+	return ReturnList[T]{Offset: offset, DataPtr: ptr, Raw: data}
 }
 
 // Lower implements [Lower] interface.
 // See https://github.com/WebAssembly/component-model/blob/main/design/mvp/CanonicalABI.md#flattening
 // To use this need to have pre-allocated linear memory into which to write the actual data.
-func (v List[T]) Lower(s Store) {
+func (v ReturnList[T]) Lower(s Store) {
 	if v.DataPtr == 0 {
 		s.Error = ErrMemWrite
 		return
 	}
 
-	data := new(bytes.Buffer)
-	binary.Write(data, binary.LittleEndian, v.Raw)
-	s.Memory.Write(v.DataPtr, data.Bytes())
+	size := len(v.Raw)
+
+	ptr := v.DataPtr
+	for i := uint32(0); i < uint32(size); i++ {
+		length := v.Raw[i].MemoryLower(s, ptr)
+		ptr += length
+	}
 
 	ptrdata := make([]byte, 8)
 	binary.LittleEndian.PutUint32(ptrdata[0:], v.DataPtr)

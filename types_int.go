@@ -1,7 +1,11 @@
 package wypes
 
+import "encoding/binary"
+
 // Int8 wraps [int8], a signed 8-bit integer.
 type Int8 int8
+
+const Int8Size = 1
 
 // Unwrap returns the wrapped value.
 func (v Int8) Unwrap() int8 {
@@ -23,8 +27,32 @@ func (v Int8) Lower(s Store) {
 	s.Stack.Push(Raw(v))
 }
 
+// MemoryLift implements [MemoryLift] interface.
+func (Int8) MemoryLift(s Store, offset uint32) (Int8, uint32) {
+	raw, ok := s.Memory.Read(offset, Int8Size)
+	if !ok {
+		s.Error = ErrMemRead
+		return Int8(0), 0
+	}
+
+	return Int8(raw[0]), Int8Size
+}
+
+// MemoryLower implements [MemoryLower] interface.
+func (v Int8) MemoryLower(s Store, offset uint32) (length uint32) {
+	ok := s.Memory.Write(offset, []byte{byte(v)})
+	if !ok {
+		s.Error = ErrMemRead
+		return 0
+	}
+
+	return Int8Size
+}
+
 // Int16 wraps [int16], a signed 16-bit integer.
 type Int16 int16
+
+const Int16Size = 2
 
 // Unwrap returns the wrapped value.
 func (v Int16) Unwrap() int16 {
@@ -46,8 +74,34 @@ func (v Int16) Lower(s Store) {
 	s.Stack.Push(Raw(v))
 }
 
+// MemoryLift implements [MemoryLifter] interface.
+func (Int16) MemoryLift(s Store, offset uint32) (Int16, uint32) {
+	raw, ok := s.Memory.Read(offset, Int16Size)
+	if !ok {
+		s.Error = ErrMemRead
+		return Int16(0), 0
+	}
+
+	return Int16(binary.LittleEndian.Uint16(raw)), Int16Size
+}
+
+// MemoryLower implements [MemoryLower] interface.
+func (v Int16) MemoryLower(s Store, offset uint32) (length uint32) {
+	data := make([]byte, Int16Size)
+	binary.LittleEndian.PutUint16(data, uint16(v))
+	ok := s.Memory.Write(offset, data)
+	if !ok {
+		s.Error = ErrMemRead
+		return 0
+	}
+
+	return Int16Size
+}
+
 // Int32 wraps [int32], a signed 32-bit integer.
 type Int32 int32
+
+const Int32Size = 4
 
 // Unwrap returns the wrapped value.
 func (v Int32) Unwrap() int32 {
@@ -69,8 +123,34 @@ func (v Int32) Lower(s Store) {
 	s.Stack.Push(Raw(v))
 }
 
+// MemoryLift implements [MemoryLifter] interface.
+func (Int32) MemoryLift(s Store, offset uint32) (Int32, uint32) {
+	raw, ok := s.Memory.Read(offset, Int32Size)
+	if !ok {
+		s.Error = ErrMemRead
+		return Int32(0), 0
+	}
+
+	return Int32(binary.LittleEndian.Uint32(raw)), Int32Size
+}
+
+// MemoryLower implements [MemoryLower] interface.
+func (v Int32) MemoryLower(s Store, offset uint32) (length uint32) {
+	data := make([]byte, Int32Size)
+	binary.LittleEndian.PutUint32(data, uint32(v))
+	ok := s.Memory.Write(offset, data)
+	if !ok {
+		s.Error = ErrMemRead
+		return 0
+	}
+
+	return Int32Size
+}
+
 // Int64 wraps [int64], a signed 64-bit integer.
 type Int64 int64
+
+const Int64Size = 8
 
 // Unwrap returns the wrapped value.
 func (v Int64) Unwrap() int64 {
@@ -90,6 +170,30 @@ func (Int64) Lift(s Store) Int64 {
 // Lower implements [Lower] interface.
 func (v Int64) Lower(s Store) {
 	s.Stack.Push(Raw(v))
+}
+
+// MemoryLift implements [MemoryLifter] interface.
+func (Int64) MemoryLift(s Store, offset uint32) (Int64, uint32) {
+	raw, ok := s.Memory.Read(offset, Int64Size)
+	if !ok {
+		s.Error = ErrMemRead
+		return Int64(0), 0
+	}
+
+	return Int64(binary.LittleEndian.Uint64(raw)), Int64Size
+}
+
+// MemoryLower implements [MemoryLower] interface.
+func (v Int64) MemoryLower(s Store, offset uint32) (length uint32) {
+	data := make([]byte, Int64Size)
+	binary.LittleEndian.PutUint64(data, uint64(v))
+	ok := s.Memory.Write(offset, data)
+	if !ok {
+		s.Error = ErrMemRead
+		return 0
+	}
+
+	return Int64Size
 }
 
 // Int wraps [int], a signed 32-bit integer.
@@ -113,4 +217,28 @@ func (Int) Lift(s Store) Int {
 // Lower implements [Lower] interface.
 func (v Int) Lower(s Store) {
 	s.Stack.Push(Raw(v))
+}
+
+// MemoryLift implements [MemoryLifter] interface.
+func (Int) MemoryLift(s Store, offset uint32) (Int, uint32) {
+	raw, ok := s.Memory.Read(offset, Int64Size)
+	if !ok {
+		s.Error = ErrMemRead
+		return Int(0), 0
+	}
+
+	return Int(binary.LittleEndian.Uint64(raw)), Int64Size
+}
+
+// MemoryLower implements [MemoryLower] interface.
+func (v Int) MemoryLower(s Store, offset uint32) (length uint32) {
+	data := make([]byte, Int64Size)
+	binary.LittleEndian.PutUint64(data, uint64(v))
+	ok := s.Memory.Write(offset, data)
+	if !ok {
+		s.Error = ErrMemRead
+		return 0
+	}
+
+	return Int64Size
 }
