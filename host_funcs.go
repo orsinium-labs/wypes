@@ -423,3 +423,233 @@ func H13[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lif
 		},
 	}
 }
+
+// H14 defines a [HostFunc] that accepts 14 high-level arguments.
+func H14[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lift[G], H Lift[H], I Lift[I], J Lift[J], K Lift[K], L Lift[L], M Lift[M], N Lift[N], Z Lower](
+	fn func(A, B, C, D, E, F, G, H, I, J, K, L, M, N) Z,
+) HostFunc {
+	var a A
+	var b B
+	var c C
+	var d D
+	var e E
+	var f F
+	var g G
+	var h H
+	var i I
+	var j J
+	var k K
+	var l L
+	var m M
+	var n N
+	var z Z
+	return HostFunc{
+		Params:  []Value{a, b, c, d, e, f, g, h, i, j, k, l, m, n},
+		Results: []Value{z},
+		Call: func(s Store) {
+			n := n.Lift(s)
+			m := m.Lift(s)
+			l := l.Lift(s)
+			k := k.Lift(s)
+			j := j.Lift(s)
+			i := i.Lift(s)
+			h := h.Lift(s)
+			g := g.Lift(s)
+			f := f.Lift(s)
+			e := e.Lift(s)
+			d := d.Lift(s)
+			c := c.Lift(s)
+			b := b.Lift(s)
+			a := a.Lift(s)
+			fn(a, b, c, d, e, f, g, h, i, j, k, l, m, n).Lower(s)
+		},
+	}
+}
+
+// H15 defines a [HostFunc] that accepts 15 high-level arguments.
+func H15[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lift[G], H Lift[H], I Lift[I], J Lift[J], K Lift[K], L Lift[L], M Lift[M], N Lift[N], O Lift[O], Z Lower](
+	fn func(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O) Z,
+) HostFunc {
+	var a A
+	var b B
+	var c C
+	var d D
+	var e E
+	var f F
+	var g G
+	var h H
+	var i I
+	var j J
+	var k K
+	var l L
+	var m M
+	var n N
+	var o O
+	var z Z
+	return HostFunc{
+		Params:  []Value{a, b, c, d, e, f, g, h, i, j, k, l, m, n, o},
+		Results: []Value{z},
+		Call: func(s Store) {
+			o := o.Lift(s)
+			n := n.Lift(s)
+			m := m.Lift(s)
+			l := l.Lift(s)
+			k := k.Lift(s)
+			j := j.Lift(s)
+			i := i.Lift(s)
+			h := h.Lift(s)
+			g := g.Lift(s)
+			f := f.Lift(s)
+			e := e.Lift(s)
+			d := d.Lift(s)
+			c := c.Lift(s)
+			b := b.Lift(s)
+			a := a.Lift(s)
+			fn(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o).Lower(s)
+		},
+	}
+}
+
+// H16 defines a [HostFunc] that accepts 16 high-level arguments.
+func H16[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lift[G], H Lift[H], I Lift[I], J Lift[J], K Lift[K], L Lift[L], M Lift[M], N Lift[N], O Lift[O], P Lift[P], Z Lower](
+	fn func(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P) Z,
+) HostFunc {
+	var a A
+	var b B
+	var c C
+	var d D
+	var e E
+	var f F
+	var g G
+	var h H
+	var i I
+	var j J
+	var k K
+	var l L
+	var m M
+	var n N
+	var o O
+	var p P
+	var z Z
+	return HostFunc{
+		Params:  []Value{a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p},
+		Results: []Value{z},
+		Call: func(s Store) {
+			p := p.Lift(s)
+			o := o.Lift(s)
+			n := n.Lift(s)
+			m := m.Lift(s)
+			l := l.Lift(s)
+			k := k.Lift(s)
+			j := j.Lift(s)
+			i := i.Lift(s)
+			h := h.Lift(s)
+			g := g.Lift(s)
+			f := f.Lift(s)
+			e := e.Lift(s)
+			d := d.Lift(s)
+			c := c.Lift(s)
+			b := b.Lift(s)
+			a := a.Lift(s)
+			fn(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p).Lower(s)
+		},
+	}
+}
+
+// H17 defines a [HostFunc] that accepts 17 high-level arguments.
+func H17[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lift[G], H Lift[H], I Lift[I], J Lift[J], K Lift[K], L Lift[L], M Lift[M], N Lift[N], O Lift[O], P Lift[P], Q Lift[Q], Z Lower](
+	fn func(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q) Z,
+) HostFunc {
+	var a A
+	var b B
+	var c C
+	var d D
+	var e E
+	var f F
+	var g G
+	var h H
+	var i I
+	var j J
+	var k K
+	var l L
+	var m M
+	var n N
+	var o O
+	var p P
+	var q Q
+	var z Z
+	return HostFunc{
+		Params:  []Value{a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q},
+		Results: []Value{z},
+		Call: func(s Store) {
+			q := q.Lift(s)
+			p := p.Lift(s)
+			o := o.Lift(s)
+			n := n.Lift(s)
+			m := m.Lift(s)
+			l := l.Lift(s)
+			k := k.Lift(s)
+			j := j.Lift(s)
+			i := i.Lift(s)
+			h := h.Lift(s)
+			g := g.Lift(s)
+			f := f.Lift(s)
+			e := e.Lift(s)
+			d := d.Lift(s)
+			c := c.Lift(s)
+			b := b.Lift(s)
+			a := a.Lift(s)
+			fn(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q).Lower(s)
+		},
+	}
+}
+
+// H18 defines a [HostFunc] that accepts 18 high-level arguments.
+func H18[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lift[G], H Lift[H], I Lift[I], J Lift[J], K Lift[K], L Lift[L], M Lift[M], N Lift[N], O Lift[O], P Lift[P], Q Lift[Q], R Lift[R], Z Lower](
+	fn func(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R) Z,
+) HostFunc {
+	var a A
+	var b B
+	var c C
+	var d D
+	var e E
+	var f F
+	var g G
+	var h H
+	var i I
+	var j J
+	var k K
+	var l L
+	var m M
+	var n N
+	var o O
+	var p P
+	var q Q
+	var r R
+	var z Z
+	return HostFunc{
+		Params:  []Value{a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r},
+		Results: []Value{z},
+		Call: func(s Store) {
+			r := r.Lift(s)
+			q := q.Lift(s)
+			p := p.Lift(s)
+			o := o.Lift(s)
+			n := n.Lift(s)
+			m := m.Lift(s)
+			l := l.Lift(s)
+			k := k.Lift(s)
+			j := j.Lift(s)
+			i := i.Lift(s)
+			h := h.Lift(s)
+			g := g.Lift(s)
+			f := f.Lift(s)
+			e := e.Lift(s)
+			d := d.Lift(s)
+			c := c.Lift(s)
+			b := b.Lift(s)
+			a := a.Lift(s)
+			fn(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r).Lower(s)
+		},
+	}
+}
