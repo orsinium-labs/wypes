@@ -92,32 +92,32 @@ func (v String) Lower(s Store) {
 	s.Stack.Push(Raw(size))
 }
 
-// List wraps a Go slice of any type that supports the [MemoryLiftLower] interface so it can be returned as a List.
+// ReturnedList wraps a Go slice of any type that supports the [MemoryLiftLower] interface so it can be returned as a List.
 // This is the implementation required for the host side of component model functions that return a *[cm.List] type.
 // See https://github.com/bytecodealliance/wasm-tools-go/blob/main/cm/list.go
-type List[T MemoryLiftLower[T]] struct {
+type ReturnedList[T MemoryLiftLower[T]] struct {
 	Offset  uint32
 	DataPtr uint32
 	Raw     []T
 }
 
 // Unwrap returns the wrapped value.
-func (v List[T]) Unwrap() []T {
+func (v ReturnedList[T]) Unwrap() []T {
 	return v.Raw
 }
 
 // ValueTypes implements [Value] interface.
-func (v List[T]) ValueTypes() []ValueType {
+func (v ReturnedList[T]) ValueTypes() []ValueType {
 	return []ValueType{ValueTypeI32}
 }
 
 // Lift implements [Lift] interface.
-func (List[T]) Lift(s Store) List[T] {
+func (ReturnedList[T]) Lift(s Store) ReturnedList[T] {
 	offset := uint32(s.Stack.Pop())
 	buf, ok := s.Memory.Read(offset, 8)
 	if !ok {
 		s.Error = ErrMemRead
-		return List[T]{}
+		return ReturnedList[T]{}
 	}
 
 	ptr := binary.LittleEndian.Uint32(buf[0:])
@@ -125,7 +125,7 @@ func (List[T]) Lift(s Store) List[T] {
 
 	// empty list, probably a return value to be filled in later.
 	if ptr == 0 || sz == 0 {
-		return List[T]{Offset: offset}
+		return ReturnedList[T]{Offset: offset}
 	}
 
 	data := make([]T, sz)
@@ -136,13 +136,13 @@ func (List[T]) Lift(s Store) List[T] {
 		p += length
 	}
 
-	return List[T]{Offset: offset, DataPtr: ptr, Raw: data}
+	return ReturnedList[T]{Offset: offset, DataPtr: ptr, Raw: data}
 }
 
 // Lower implements [Lower] interface.
 // See https://github.com/WebAssembly/component-model/blob/main/design/mvp/CanonicalABI.md#flattening
 // To use this need to have pre-allocated linear memory into which to write the actual data.
-func (v List[T]) Lower(s Store) {
+func (v ReturnedList[T]) Lower(s Store) {
 	if v.DataPtr == 0 {
 		s.Error = ErrMemWrite
 		return
