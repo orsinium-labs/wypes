@@ -207,6 +207,22 @@ type LiftLower[T any] interface {
 	Lower
 }
 
+// MemoryLift reads values from [Store.Memory] into a native Go value.
+type MemoryLift[T any] interface {
+	MemoryLift(Store, Addr) (T, uint32)
+}
+
+// MemoryLower writes a native Go value into the [Store.Memory].
+type MemoryLower[T any] interface {
+	MemoryLower(Store, Addr) uint32
+}
+
+// MemoryLiftLower is a type that implements both [MemoryLift] and [MemoryLower].
+type MemoryLiftLower[T any] interface {
+	MemoryLift[T]
+	MemoryLower[T]
+}
+
 // Modules is a collection of host-defined modules.
 //
 // It maps module names to the module definitions.
