@@ -205,3 +205,33 @@ func TestListBool(t *testing.T) {
 
 	is.SliceEqual(c, list.Unwrap(), data)
 }
+
+func TestListEmptyStrings(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	store := wypes.Store{Stack: stack, Memory: wypes.NewSliceMemory(1024)}
+
+	data := []string{}
+	wypes.ListStrings{Offset: 64, Raw: data}.Lower(store)
+
+	store.Stack.Push(64)
+	store.Stack.Push(uint64(len(data)))
+	list := wypes.ListStrings{}.Lift(store)
+
+	is.SliceEqual(c, list.Unwrap(), data)
+}
+
+func TestListStrings(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	store := wypes.Store{Stack: stack, Memory: wypes.NewSliceMemory(1024)}
+
+	data := []string{"Hello", "World", "!"}
+	wypes.ListStrings{Offset: 64, Raw: data}.Lower(store)
+
+	store.Stack.Push(64)
+	store.Stack.Push(uint64(len(data)))
+	list := wypes.ListStrings{}.Lift(store)
+
+	is.SliceEqual(c, list.Unwrap(), data)
+}

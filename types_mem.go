@@ -211,5 +211,93 @@ func (v List[T]) Lower(s Store) {
 	s.Stack.Push(Raw(size))
 }
 
+// ListStrings wraps a Go slice of strings.
+// This is the implementation required for the host side of component model functions that pass [cm.List] of strings
+// as parameters.
+// See https://github.com/bytecodealliance/wasm-tools-go/blob/main/cm/list.go
+type ListStrings struct {
+	Offset uint32
+	Raw    []string
+}
+
+// Unwrap returns the wrapped value.
+func (v ListStrings) Unwrap() []string {
+	return v.Raw
+}
+
+// ValueTypes implements [Value] interface.
+func (v ListStrings) ValueTypes() []ValueType {
+	return []ValueType{ValueTypeI32, ValueTypeI32}
+}
+
+// Lift implements [Lift] interface.
+func (ListStrings) Lift(s Store) ListStrings {
+	size := uint32(s.Stack.Pop())
+	offset := uint32(s.Stack.Pop())
+
+	// empty list
+	if size == 0 {
+		return ListStrings{Offset: offset}
+	}
+
+	data := make([]string, size)
+
+	for i := uint32(0); i < size; i++ {
+		buf, ok := s.Memory.Read(offset+i*8, 8)
+		if !ok {
+			s.Error = ErrMemRead
+			return ListStrings{Offset: offset, Raw: data}
+		}
+
+		ptr := binary.LittleEndian.Uint32(buf[0:])
+		sz := binary.LittleEndian.Uint32(buf[4:])
+
+		raw, ok := s.Memory.Read(ptr, sz)
+		if !ok {
+			s.Error = ErrMemRead
+			return ListStrings{Offset: offset, Raw: data}
+		}
+
+		data[i] = string(raw)
+	}
+
+	return ListStrings{Offset: offset, Raw: data}
+}
+
+// Lower implements [Lower] interface.
+// See https://github.com/WebAssembly/component-model/blob/main/design/mvp/CanonicalABI.md#flattening
+// In theory we should re-allocate enough linear memory into which to write the actual data.
+func (v ListStrings) Lower(s Store) {
+	size := uint32(len(v.Raw))
+	plen := size * 8
+
+	// write pointers
+	for i := uint32(0); i < size; i++ {
+		ptrdata := make([]byte, 8)
+		binary.LittleEndian.PutUint32(ptrdata[0:], v.Offset+i*8+plen)
+		binary.LittleEndian.PutUint32(ptrdata[4:], uint32(len(v.Raw[i])))
+
+		ok := s.Memory.Write(v.Offset+i*8, ptrdata)
+		if !ok {
+			s.Error = ErrMemRead
+			return
+		}
+	}
+
+	// write the actual strings
+	for i, str := range v.Raw {
+		ptr := v.Offset + plen + uint32(i)*8
+
+		ok := s.Memory.Write(ptr, []byte(str))
+		if !ok {
+			s.Error = ErrMemRead
+			return
+		}
+	}
+
+	s.Stack.Push(Raw(v.Offset))
+	s.Stack.Push(Raw(size))
+}
+
 // TODO: fixed-width array
 // TODO: CString
