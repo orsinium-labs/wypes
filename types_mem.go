@@ -162,5 +162,54 @@ func (v ReturnedList[T]) Lower(s Store) {
 	s.Memory.Write(v.Offset, ptrdata)
 }
 
+// List wraps a Go slice of any type that implements the [MemoryLiftLower] interface.
+// This is the implementation required for the host side of component model functions that pass [cm.List] parameters.
+type List[T MemoryLiftLower[T]] struct {
+	Offset uint32
+	Raw    []T
+}
+
+// Unwrap returns the wrapped value.
+func (v List[T]) Unwrap() []T {
+	return v.Raw
+}
+
+// ValueTypes implements [Value] interface.
+func (v List[T]) ValueTypes() []ValueType {
+	return []ValueType{ValueTypeI32, ValueTypeI32}
+}
+
+// Lift implements [Lift] interface.
+func (List[T]) Lift(s Store) List[T] {
+	size := uint32(s.Stack.Pop())
+	offset := uint32(s.Stack.Pop())
+	// empty list
+	if size == 0 {
+		return List[T]{Offset: offset}
+	}
+	data := make([]T, size)
+	ptr := offset
+	var length uint32
+	for i := uint32(0); i < size; i++ {
+		data[i], length = T.MemoryLift(data[0], s, ptr)
+		ptr += length
+	}
+	return List[T]{Offset: offset, Raw: data}
+}
+
+// Lower implements [Lower] interface.
+// See https://github.com/WebAssembly/component-model/blob/main/design/mvp/CanonicalABI.md#flattening
+// In theory we should re-allocate enough linear memory into which to write the actual data.
+func (v List[T]) Lower(s Store) {
+	size := len(v.Raw)
+	ptr := v.Offset
+	for i := uint32(0); i < uint32(size); i++ {
+		length := v.Raw[i].MemoryLower(s, ptr)
+		ptr += length
+	}
+	s.Stack.Push(Raw(v.Offset))
+	s.Stack.Push(Raw(size))
+}
+
 // TODO: fixed-width array
 // TODO: CString
