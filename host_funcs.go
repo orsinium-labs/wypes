@@ -11,7 +11,7 @@ package wypes
 type HostFunc struct {
 	Params  []Value
 	Results []Value
-	Call    func(Store)
+	Call    func(*Store)
 }
 
 func (f *HostFunc) NumParams() int {
@@ -54,7 +54,7 @@ func H0[Z Lower](
 	return HostFunc{
 		Params:  []Value{},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			fn().Lower(s)
 		},
 	}
@@ -69,7 +69,7 @@ func H1[A Lift[A], Z Lower](
 	return HostFunc{
 		Params:  []Value{a},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			a := a.Lift(s)
 			fn(a).Lower(s)
 		},
@@ -86,7 +86,7 @@ func H2[A Lift[A], B Lift[B], Z Lower](
 	return HostFunc{
 		Params:  []Value{a, b},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			b := b.Lift(s)
 			a := a.Lift(s)
 			fn(a, b).Lower(s)
@@ -105,7 +105,7 @@ func H3[A Lift[A], B Lift[B], C Lift[C], Z Lower](
 	return HostFunc{
 		Params:  []Value{a, b, c},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			c := c.Lift(s)
 			b := b.Lift(s)
 			a := a.Lift(s)
@@ -126,7 +126,7 @@ func H4[A Lift[A], B Lift[B], C Lift[C], D Lift[D], Z Lower](
 	return HostFunc{
 		Params:  []Value{a, b, c, d},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			d := d.Lift(s)
 			c := c.Lift(s)
 			b := b.Lift(s)
@@ -149,7 +149,7 @@ func H5[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], Z Lower](
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			e := e.Lift(s)
 			d := d.Lift(s)
 			c := c.Lift(s)
@@ -174,7 +174,7 @@ func H6[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], Z Lowe
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e, f},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			f := f.Lift(s)
 			e := e.Lift(s)
 			d := d.Lift(s)
@@ -201,7 +201,7 @@ func H7[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lift
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e, f, g},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			g := g.Lift(s)
 			f := f.Lift(s)
 			e := e.Lift(s)
@@ -230,7 +230,7 @@ func H8[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lift
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e, f, g, h},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			h := h.Lift(s)
 			g := g.Lift(s)
 			f := f.Lift(s)
@@ -261,7 +261,7 @@ func H9[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lift
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e, f, g, h, i},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			i := i.Lift(s)
 			h := h.Lift(s)
 			g := g.Lift(s)
@@ -294,7 +294,7 @@ func H10[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lif
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e, f, g, h, i, j},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			j := j.Lift(s)
 			i := i.Lift(s)
 			h := h.Lift(s)
@@ -329,7 +329,7 @@ func H11[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lif
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e, f, g, h, i, j, k},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			k := k.Lift(s)
 			j := j.Lift(s)
 			i := i.Lift(s)
@@ -366,7 +366,7 @@ func H12[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lif
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e, f, g, h, i, j, k, l},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			l := l.Lift(s)
 			k := k.Lift(s)
 			j := j.Lift(s)
@@ -405,7 +405,7 @@ func H13[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lif
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e, f, g, h, i, j, k, l, m},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			m := m.Lift(s)
 			l := l.Lift(s)
 			k := k.Lift(s)
@@ -446,7 +446,7 @@ func H14[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lif
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e, f, g, h, i, j, k, l, m, n},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			n := n.Lift(s)
 			m := m.Lift(s)
 			l := l.Lift(s)
@@ -489,7 +489,7 @@ func H15[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lif
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e, f, g, h, i, j, k, l, m, n, o},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			o := o.Lift(s)
 			n := n.Lift(s)
 			m := m.Lift(s)
@@ -534,7 +534,7 @@ func H16[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lif
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			p := p.Lift(s)
 			o := o.Lift(s)
 			n := n.Lift(s)
@@ -581,7 +581,7 @@ func H17[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lif
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			q := q.Lift(s)
 			p := p.Lift(s)
 			o := o.Lift(s)
@@ -630,7 +630,7 @@ func H18[A Lift[A], B Lift[B], C Lift[C], D Lift[D], E Lift[E], F Lift[F], G Lif
 	return HostFunc{
 		Params:  []Value{a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r},
 		Results: []Value{z},
-		Call: func(s Store) {
+		Call: func(s *Store) {
 			r := r.Lift(s)
 			q := q.Lift(s)
 			p := p.Lift(s)

@@ -18,17 +18,17 @@ func (Int8) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Int8) Lift(s Store) Int8 {
+func (Int8) Lift(s *Store) Int8 {
 	return Int8(s.Stack.Pop())
 }
 
 // Lower implements [Lower] interface.
-func (v Int8) Lower(s Store) {
+func (v Int8) Lower(s *Store) {
 	s.Stack.Push(Raw(v))
 }
 
 // MemoryLift implements [MemoryLift] interface.
-func (Int8) MemoryLift(s Store, offset uint32) (Int8, uint32) {
+func (Int8) MemoryLift(s *Store, offset uint32) (Int8, uint32) {
 	raw, ok := s.Memory.Read(offset, int8Size)
 	if !ok {
 		s.Error = ErrMemRead
@@ -39,7 +39,7 @@ func (Int8) MemoryLift(s Store, offset uint32) (Int8, uint32) {
 }
 
 // MemoryLower implements [MemoryLower] interface.
-func (v Int8) MemoryLower(s Store, offset uint32) (length uint32) {
+func (v Int8) MemoryLower(s *Store, offset uint32) (length uint32) {
 	ok := s.Memory.Write(offset, []byte{byte(v)})
 	if !ok {
 		s.Error = ErrMemWrite
@@ -65,17 +65,17 @@ func (Int16) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Int16) Lift(s Store) Int16 {
+func (Int16) Lift(s *Store) Int16 {
 	return Int16(s.Stack.Pop())
 }
 
 // Lower implements [Lower] interface.
-func (v Int16) Lower(s Store) {
+func (v Int16) Lower(s *Store) {
 	s.Stack.Push(Raw(v))
 }
 
 // MemoryLift implements [MemoryLifter] interface.
-func (Int16) MemoryLift(s Store, offset uint32) (Int16, uint32) {
+func (Int16) MemoryLift(s *Store, offset uint32) (Int16, uint32) {
 	raw, ok := s.Memory.Read(offset, int16Size)
 	if !ok {
 		s.Error = ErrMemRead
@@ -86,7 +86,7 @@ func (Int16) MemoryLift(s Store, offset uint32) (Int16, uint32) {
 }
 
 // MemoryLower implements [MemoryLower] interface.
-func (v Int16) MemoryLower(s Store, offset uint32) (length uint32) {
+func (v Int16) MemoryLower(s *Store, offset uint32) (length uint32) {
 	data := make([]byte, int16Size)
 	binary.LittleEndian.PutUint16(data, uint16(v))
 	ok := s.Memory.Write(offset, data)
@@ -114,17 +114,17 @@ func (Int32) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Int32) Lift(s Store) Int32 {
+func (Int32) Lift(s *Store) Int32 {
 	return Int32(s.Stack.Pop())
 }
 
 // Lower implements [Lower] interface.
-func (v Int32) Lower(s Store) {
+func (v Int32) Lower(s *Store) {
 	s.Stack.Push(Raw(v))
 }
 
 // MemoryLift implements [MemoryLifter] interface.
-func (Int32) MemoryLift(s Store, offset uint32) (Int32, uint32) {
+func (Int32) MemoryLift(s *Store, offset uint32) (Int32, uint32) {
 	raw, ok := s.Memory.Read(offset, int32Size)
 	if !ok {
 		s.Error = ErrMemRead
@@ -135,7 +135,7 @@ func (Int32) MemoryLift(s Store, offset uint32) (Int32, uint32) {
 }
 
 // MemoryLower implements [MemoryLower] interface.
-func (v Int32) MemoryLower(s Store, offset uint32) (length uint32) {
+func (v Int32) MemoryLower(s *Store, offset uint32) (length uint32) {
 	data := make([]byte, int32Size)
 	binary.LittleEndian.PutUint32(data, uint32(v))
 	ok := s.Memory.Write(offset, data)
@@ -163,17 +163,17 @@ func (Int64) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Int64) Lift(s Store) Int64 {
+func (Int64) Lift(s *Store) Int64 {
 	return Int64(s.Stack.Pop())
 }
 
 // Lower implements [Lower] interface.
-func (v Int64) Lower(s Store) {
+func (v Int64) Lower(s *Store) {
 	s.Stack.Push(Raw(v))
 }
 
 // MemoryLift implements [MemoryLifter] interface.
-func (Int64) MemoryLift(s Store, offset uint32) (Int64, uint32) {
+func (Int64) MemoryLift(s *Store, offset uint32) (Int64, uint32) {
 	raw, ok := s.Memory.Read(offset, int64Size)
 	if !ok {
 		s.Error = ErrMemRead
@@ -184,7 +184,7 @@ func (Int64) MemoryLift(s Store, offset uint32) (Int64, uint32) {
 }
 
 // MemoryLower implements [MemoryLower] interface.
-func (v Int64) MemoryLower(s Store, offset uint32) (length uint32) {
+func (v Int64) MemoryLower(s *Store, offset uint32) (length uint32) {
 	data := make([]byte, int64Size)
 	binary.LittleEndian.PutUint64(data, uint64(v))
 	ok := s.Memory.Write(offset, data)
@@ -210,17 +210,17 @@ func (Int) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Int) Lift(s Store) Int {
+func (Int) Lift(s *Store) Int {
 	return Int(s.Stack.Pop())
 }
 
 // Lower implements [Lower] interface.
-func (v Int) Lower(s Store) {
+func (v Int) Lower(s *Store) {
 	s.Stack.Push(Raw(v))
 }
 
 // MemoryLift implements [MemoryLifter] interface.
-func (Int) MemoryLift(s Store, offset uint32) (Int, uint32) {
+func (Int) MemoryLift(s *Store, offset uint32) (Int, uint32) {
 	raw, ok := s.Memory.Read(offset, int64Size)
 	if !ok {
 		s.Error = ErrMemRead
@@ -231,7 +231,7 @@ func (Int) MemoryLift(s Store, offset uint32) (Int, uint32) {
 }
 
 // MemoryLower implements [MemoryLower] interface.
-func (v Int) MemoryLower(s Store, offset uint32) (length uint32) {
+func (v Int) MemoryLower(s *Store, offset uint32) (length uint32) {
 	data := make([]byte, int64Size)
 	binary.LittleEndian.PutUint64(data, uint64(v))
 	ok := s.Memory.Write(offset, data)

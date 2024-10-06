@@ -23,12 +23,12 @@ func (Bool) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Bool) Lift(s Store) Bool {
+func (Bool) Lift(s *Store) Bool {
 	return s.Stack.Pop() != 0
 }
 
 // Lower implements [Lower] interface.
-func (v Bool) Lower(s Store) {
+func (v Bool) Lower(s *Store) {
 	res := 0
 	if v {
 		res = 1
@@ -37,7 +37,7 @@ func (v Bool) Lower(s Store) {
 }
 
 // MemoryLift implements [MemoryLift] interface.
-func (Bool) MemoryLift(s Store, offset uint32) (Bool, uint32) {
+func (Bool) MemoryLift(s *Store, offset uint32) (Bool, uint32) {
 	raw, ok := s.Memory.Read(offset, BoolSize)
 	if !ok {
 		s.Error = ErrMemRead
@@ -48,7 +48,7 @@ func (Bool) MemoryLift(s Store, offset uint32) (Bool, uint32) {
 }
 
 // MemoryLower implements [MemoryLower] interface.
-func (v Bool) MemoryLower(s Store, offset uint32) (length uint32) {
+func (v Bool) MemoryLower(s *Store, offset uint32) (length uint32) {
 	res := 0
 	if v {
 		res = 1
@@ -78,19 +78,19 @@ func (Float32) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Float32) Lift(s Store) Float32 {
+func (Float32) Lift(s *Store) Float32 {
 	f := math.Float32frombits(uint32(s.Stack.Pop()))
 	return Float32(f)
 }
 
 // Lower implements [Lower] interface.
-func (v Float32) Lower(s Store) {
+func (v Float32) Lower(s *Store) {
 	r := math.Float32bits(float32(v))
 	s.Stack.Push(Raw(r))
 }
 
 // MemoryLift implements [MemoryLift] interface.
-func (Float32) MemoryLift(s Store, offset uint32) (Float32, uint32) {
+func (Float32) MemoryLift(s *Store, offset uint32) (Float32, uint32) {
 	raw, ok := s.Memory.Read(offset, Float32Size)
 	if !ok {
 		s.Error = ErrMemRead
@@ -101,7 +101,7 @@ func (Float32) MemoryLift(s Store, offset uint32) (Float32, uint32) {
 }
 
 // MemoryLower implements [MemoryLower] interface.
-func (v Float32) MemoryLower(s Store, offset uint32) (length uint32) {
+func (v Float32) MemoryLower(s *Store, offset uint32) (length uint32) {
 	data := make([]byte, Float32Size)
 	binary.LittleEndian.PutUint32(data, math.Float32bits(float32(v)))
 	ok := s.Memory.Write(offset, data)
@@ -129,19 +129,19 @@ func (Float64) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Float64) Lift(s Store) Float64 {
+func (Float64) Lift(s *Store) Float64 {
 	f := math.Float64frombits(s.Stack.Pop())
 	return Float64(f)
 }
 
 // Lower implements [Lower] interface.
-func (v Float64) Lower(s Store) {
+func (v Float64) Lower(s *Store) {
 	res := math.Float64bits(float64(v))
 	s.Stack.Push(Raw(res))
 }
 
 // MemoryLift implements [MemoryLift] interface.
-func (Float64) MemoryLift(s Store, offset uint32) (Float64, uint32) {
+func (Float64) MemoryLift(s *Store, offset uint32) (Float64, uint32) {
 	raw, ok := s.Memory.Read(offset, Float64Size)
 	if !ok {
 		s.Error = ErrMemRead
@@ -152,7 +152,7 @@ func (Float64) MemoryLift(s Store, offset uint32) (Float64, uint32) {
 }
 
 // MemoryLower implements [MemoryLower] interface.
-func (v Float64) MemoryLower(s Store, offset uint32) (length uint32) {
+func (v Float64) MemoryLower(s *Store, offset uint32) (length uint32) {
 	data := make([]byte, Float64Size)
 	binary.LittleEndian.PutUint64(data, math.Float64bits(float64(v)))
 	ok := s.Memory.Write(offset, data)
@@ -178,7 +178,7 @@ func (Complex64) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Complex64) Lift(s Store) Complex64 {
+func (Complex64) Lift(s *Store) Complex64 {
 	c := complex(
 		math.Float32frombits(uint32(s.Stack.Pop())),
 		math.Float32frombits(uint32(s.Stack.Pop())),
@@ -187,7 +187,7 @@ func (Complex64) Lift(s Store) Complex64 {
 }
 
 // Lower implements [Lower] interface.
-func (v Complex64) Lower(s Store) {
+func (v Complex64) Lower(s *Store) {
 	vReal := math.Float32bits(real(v))
 	vImag := math.Float32bits(imag(v))
 	s.Stack.Push(Raw(vReal))
@@ -208,7 +208,7 @@ func (Complex128) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Complex128) Lift(s Store) Complex128 {
+func (Complex128) Lift(s *Store) Complex128 {
 	c := complex(
 		math.Float64frombits(uint64(s.Stack.Pop())),
 		math.Float64frombits(uint64(s.Stack.Pop())),
@@ -217,7 +217,7 @@ func (Complex128) Lift(s Store) Complex128 {
 }
 
 // Lower implements [Lower] interface.
-func (v Complex128) Lower(s Store) {
+func (v Complex128) Lower(s *Store) {
 	vReal := math.Float64bits(real(v))
 	vImag := math.Float64bits(imag(v))
 	s.Stack.Push(Raw(vReal))
@@ -238,12 +238,12 @@ func (Duration) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Duration) Lift(s Store) Duration {
+func (Duration) Lift(s *Store) Duration {
 	return Duration(s.Stack.Pop())
 }
 
 // Lower implements [Lower] interface.
-func (v Duration) Lower(s Store) {
+func (v Duration) Lower(s *Store) {
 	s.Stack.Push(Raw(v))
 }
 
@@ -261,12 +261,12 @@ func (Time) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Time) Lift(s Store) Time {
+func (Time) Lift(s *Store) Time {
 	return Time(time.Unix(int64(s.Stack.Pop()), 0))
 }
 
 // Lower implements [Lower] interface.
-func (v Time) Lower(s Store) {
+func (v Time) Lower(s *Store) {
 	s.Stack.Push(Raw(time.Time(v).Unix()))
 }
 
@@ -297,7 +297,7 @@ func (Void) ValueTypes() []ValueType {
 }
 
 // Lower implements [Lower] interface.
-func (Void) Lower(s Store) {}
+func (Void) Lower(s *Store) {}
 
 // Pair wraps two values of arbitrary types.
 //
@@ -317,7 +317,7 @@ func (v Pair[L, R]) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Pair[L, R]) Lift(s Store) Pair[L, R] {
+func (Pair[L, R]) Lift(s *Store) Pair[L, R] {
 	var left L
 	var right R
 	return Pair[L, R]{
@@ -327,7 +327,7 @@ func (Pair[L, R]) Lift(s Store) Pair[L, R] {
 }
 
 // Lower implements [Lower] interface.
-func (v Pair[L, R]) Lower(s Store) {
+func (v Pair[L, R]) Lower(s *Store) {
 	v.Left.Lower(s)
 	v.Right.Lower(s)
 }
@@ -371,7 +371,7 @@ func (HostRef[T]) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (HostRef[T]) Lift(s Store) HostRef[T] {
+func (HostRef[T]) Lift(s *Store) HostRef[T] {
 	index := uint32(s.Stack.Pop())
 	var def T
 	raw, found := s.Refs.Get(index, def)
@@ -391,7 +391,7 @@ func (HostRef[T]) Lift(s Store) HostRef[T] {
 }
 
 // Lower implements [Lower] interface.
-func (v HostRef[T]) Lower(s Store) {
+func (v HostRef[T]) Lower(s *Store) {
 	var index uint32
 	if v.index == 0 {
 		index = s.Refs.Put(v.Raw)

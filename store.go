@@ -51,12 +51,12 @@ type Store struct {
 }
 
 // ValueTypes implements [Value] interface.
-func (Store) ValueTypes() []ValueType {
+func (*Store) ValueTypes() []ValueType {
 	return []ValueType{}
 }
 
 // Lift implements [Lift] interface.
-func (Store) Lift(s Store) Store {
+func (*Store) Lift(s *Store) *Store {
 	return s
 }
 
@@ -192,13 +192,13 @@ type Value interface {
 // Lift reads values from [Store] into a native Go value.
 type Lift[T any] interface {
 	Value
-	Lift(Store) T
+	Lift(*Store) T
 }
 
 // Lower writes a native Go value into the [Store].
 type Lower interface {
 	Value
-	Lower(Store)
+	Lower(*Store)
 }
 
 // LiftLower is a type that implements both [Lift] and [Lower].
@@ -209,12 +209,12 @@ type LiftLower[T any] interface {
 
 // MemoryLift reads values from [Store.Memory] into a native Go value.
 type MemoryLift[T any] interface {
-	MemoryLift(Store, Addr) (T, uint32)
+	MemoryLift(*Store, Addr) (T, uint32)
 }
 
 // MemoryLower writes a native Go value into the [Store.Memory].
 type MemoryLower[T any] interface {
-	MemoryLower(Store, Addr) uint32
+	MemoryLower(*Store, Addr) uint32
 }
 
 // MemoryLiftLower is a type that implements both [MemoryLift] and [MemoryLower].

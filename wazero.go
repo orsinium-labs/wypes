@@ -50,6 +50,6 @@ func wazeroAdaptHostFunc(hf HostFunc, refs Refs) api.GoModuleFunction {
 			Refs:    refs,
 			Context: ctx,
 		}
-		hf.Call(store)
+		hf.Call(&store)
 	})
 }
