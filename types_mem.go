@@ -1,9 +1,7 @@
 package wypes
 
 import (
-	"bytes"
 	"encoding/binary"
-	"unsafe"
 )
 
 // Bytes wraps a slice of bytes.
@@ -94,10 +92,10 @@ func (v String) Lower(s Store) {
 	s.Stack.Push(Raw(size))
 }
 
-// List wraps a Go slice of any type.
-// This is the implementation required for the host side of the component model [cm.List] type.
+// List wraps a Go slice of any type that supports the [MemoryLiftLower] interface so it can be returned as a List.
+// This is the implementation required for the host side of component model functions that return a *[cm.List] type.
 // See https://github.com/bytecodealliance/wasm-tools-go/blob/main/cm/list.go
-type List[T int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64 | float32 | float64] struct {
+type List[T MemoryLiftLower[T]] struct {
 	Offset  uint32
 	DataPtr uint32
 	Raw     []T
@@ -130,15 +128,13 @@ func (List[T]) Lift(s Store) List[T] {
 		return List[T]{Offset: offset}
 	}
 
-	raw, ok := s.Memory.Read(ptr, uint32(sz)*uint32(unsafe.Sizeof(T(0))))
-	if !ok {
-		s.Error = ErrMemRead
-		return List[T]{Offset: offset}
-	}
-
-	r := bytes.NewReader(raw)
 	data := make([]T, sz)
-	binary.Read(r, binary.LittleEndian, data)
+	p := ptr
+	var length uint32
+	for i := uint32(0); i < sz; i++ {
+		data[i], length = T.MemoryLift(data[0], s, p)
+		p += length
+	}
 
 	return List[T]{Offset: offset, DataPtr: ptr, Raw: data}
 }
@@ -152,9 +148,13 @@ func (v List[T]) Lower(s Store) {
 		return
 	}
 
-	data := new(bytes.Buffer)
-	binary.Write(data, binary.LittleEndian, v.Raw)
-	s.Memory.Write(v.DataPtr, data.Bytes())
+	size := len(v.Raw)
+
+	ptr := v.DataPtr
+	for i := uint32(0); i < uint32(size); i++ {
+		length := v.Raw[i].MemoryLower(s, ptr)
+		ptr += length
+	}
 
 	ptrdata := make([]byte, 8)
 	binary.LittleEndian.PutUint32(ptrdata[0:], v.DataPtr)

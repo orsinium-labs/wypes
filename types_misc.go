@@ -2,12 +2,15 @@ package wypes
 
 import (
 	"context"
+	"encoding/binary"
 	"math"
 	"time"
 )
 
 // Bool wraps [bool].
 type Bool bool
+
+const BoolSize = 1
 
 // Unwrap returns the wrapped value.
 func (v Bool) Unwrap() bool {
@@ -33,8 +36,36 @@ func (v Bool) Lower(s Store) {
 	s.Stack.Push(Raw(res))
 }
 
+// MemoryLift implements [MemoryLift] interface.
+func (Bool) MemoryLift(s Store, offset uint32) (Bool, uint32) {
+	raw, ok := s.Memory.Read(offset, BoolSize)
+	if !ok {
+		s.Error = ErrMemRead
+		return Bool(false), 0
+	}
+
+	return Bool(raw[0] == 1), BoolSize
+}
+
+// MemoryLower implements [MemoryLower] interface.
+func (v Bool) MemoryLower(s Store, offset uint32) (length uint32) {
+	res := 0
+	if v {
+		res = 1
+	}
+	ok := s.Memory.Write(offset, []byte{byte(res)})
+	if !ok {
+		s.Error = ErrMemRead
+		return 0
+	}
+
+	return BoolSize
+}
+
 // Float32 wraps [float32].
 type Float32 float32
+
+const Float32Size = 4
 
 // Unwrap returns the wrapped value.
 func (v Float32) Unwrap() float32 {
@@ -58,8 +89,34 @@ func (v Float32) Lower(s Store) {
 	s.Stack.Push(Raw(r))
 }
 
+// MemoryLift implements [MemoryLift] interface.
+func (Float32) MemoryLift(s Store, offset uint32) (Float32, uint32) {
+	raw, ok := s.Memory.Read(offset, Float32Size)
+	if !ok {
+		s.Error = ErrMemRead
+		return Float32(0), 0
+	}
+
+	return Float32(math.Float32frombits(binary.LittleEndian.Uint32(raw))), Float32Size
+}
+
+// MemoryLower implements [MemoryLower] interface.
+func (v Float32) MemoryLower(s Store, offset uint32) (length uint32) {
+	data := make([]byte, Float32Size)
+	binary.LittleEndian.PutUint32(data, math.Float32bits(float32(v)))
+	ok := s.Memory.Write(offset, data)
+	if !ok {
+		s.Error = ErrMemRead
+		return 0
+	}
+
+	return Float32Size
+}
+
 // Float64 wraps [float64].
 type Float64 float64
+
+const Float64Size = 8
 
 // Unwrap returns the wrapped value.
 func (v Float64) Unwrap() float64 {
@@ -81,6 +138,30 @@ func (Float64) Lift(s Store) Float64 {
 func (v Float64) Lower(s Store) {
 	res := math.Float64bits(float64(v))
 	s.Stack.Push(Raw(res))
+}
+
+// MemoryLift implements [MemoryLift] interface.
+func (Float64) MemoryLift(s Store, offset uint32) (Float64, uint32) {
+	raw, ok := s.Memory.Read(offset, Float64Size)
+	if !ok {
+		s.Error = ErrMemRead
+		return Float64(0), 0
+	}
+
+	return Float64(math.Float32frombits(binary.LittleEndian.Uint32(raw))), Float64Size
+}
+
+// MemoryLower implements [MemoryLower] interface.
+func (v Float64) MemoryLower(s Store, offset uint32) (length uint32) {
+	data := make([]byte, Float64Size)
+	binary.LittleEndian.PutUint64(data, math.Float64bits(float64(v)))
+	ok := s.Memory.Write(offset, data)
+	if !ok {
+		s.Error = ErrMemRead
+		return 0
+	}
+
+	return Float64Size
 }
 
 // Complex64 wraps [complex64].
