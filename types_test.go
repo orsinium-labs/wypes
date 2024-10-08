@@ -18,11 +18,11 @@ func testRoundtrip[T wypes.LiftLower[T]](t *testing.T) {
 
 	// lift, stack should be empty
 	var i T
-	i = i.Lift(store)
+	i = i.Lift(&store)
 	is.Equal(c, stack.Len(), 0)
 
 	// lower, it should put the value on the stack
-	i.Lower(store)
+	i.Lower(&store)
 	is.Equal(c, stack.Len(), 1)
 
 	// pop from the stack and check the value
@@ -64,11 +64,11 @@ func testRoundtripPair[T wypes.LiftLower[T]](t *testing.T) {
 
 	// lift, stack should be empty
 	var i T
-	i = i.Lift(store)
+	i = i.Lift(&store)
 	is.Equal(c, stack.Len(), 0)
 
 	// lower, it should put the values on the stack
-	i.Lower(store)
+	i.Lower(&store)
 	is.Equal(c, stack.Len(), 2)
 
 	// pop from the stack and check the value
@@ -114,7 +114,7 @@ func TestString_Lift(t *testing.T) {
 	stack.Push(3) // offset
 	stack.Push(6) // len
 	var typ wypes.String
-	val := typ.Lift(store)
+	val := typ.Lift(&store)
 	is.Equal(c, val.Unwrap(), "hello!")
 }
 
@@ -128,8 +128,8 @@ func TestString_Lower(t *testing.T) {
 		Offset: 3,
 		Raw:    "hello!",
 	}
-	val1.Lower(store)
-	val2 := val1.Lift(store)
+	val1.Lower(&store)
+	val2 := val1.Lift(&store)
 	is.Equal(c, val2.Unwrap(), "hello!")
 }
 
@@ -143,7 +143,7 @@ func TestBytes_Lift(t *testing.T) {
 	stack.Push(3) // offset
 	stack.Push(6) // len
 	var typ wypes.Bytes
-	val := typ.Lift(store)
+	val := typ.Lift(&store)
 	is.SliceEqual(c, val.Unwrap(), []byte("hello!"))
 }
 
@@ -158,8 +158,8 @@ func TestBytes_Lower(t *testing.T) {
 		Offset: 3,
 		Raw:    []byte("hello!"),
 	}
-	val1.Lower(store)
-	val2 := val1.Lift(store)
+	val1.Lower(&store)
+	val2 := val1.Lift(&store)
 	is.SliceEqual(c, val2.Unwrap(), []byte("hello!"))
 }
 
@@ -176,9 +176,9 @@ func TestHostRef_Lower(t *testing.T) {
 	}
 	val1 := wypes.HostRef[user]{Raw: user{"aragorn"}}
 	val2 := wypes.HostRef[user]{Raw: user{"gandalf"}}
-	val1.Lower(store)
-	val2.Lower(store)
-	val3 := val2.Lift(store)
+	val1.Lower(&store)
+	val2.Lower(&store)
+	val3 := val2.Lift(&store)
 	is.Equal(c, val3.Unwrap(), user{"gandalf"})
 }
 
@@ -190,8 +190,8 @@ func TestHostRef_Drop(t *testing.T) {
 		Refs:  refs,
 	}
 	val1 := wypes.HostRef[user]{Raw: user{"aragorn"}}
-	val1.Lower(store)
-	val2 := val1.Lift(store)
+	val1.Lower(&store)
+	val2 := val1.Lift(&store)
 	is.Equal(c, val2.Unwrap(), user{"aragorn"})
 	is.Equal(c, len(refs.Raw), 1)
 	val2.Drop()

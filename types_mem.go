@@ -27,7 +27,7 @@ func (v Bytes) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (Bytes) Lift(s Store) Bytes {
+func (Bytes) Lift(s *Store) Bytes {
 	size := uint32(s.Stack.Pop())
 	offset := uint32(s.Stack.Pop())
 	raw, ok := s.Memory.Read(offset, size)
@@ -38,7 +38,7 @@ func (Bytes) Lift(s Store) Bytes {
 }
 
 // Lower implements [Lower] interface.
-func (v Bytes) Lower(s Store) {
+func (v Bytes) Lower(s *Store) {
 	ok := s.Memory.Write(v.Offset, v.Raw)
 	if !ok {
 		s.Error = ErrMemWrite
@@ -71,7 +71,7 @@ func (v String) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (String) Lift(s Store) String {
+func (String) Lift(s *Store) String {
 	size := uint32(s.Stack.Pop())
 	offset := uint32(s.Stack.Pop())
 	raw, ok := s.Memory.Read(offset, size)
@@ -82,7 +82,7 @@ func (String) Lift(s Store) String {
 }
 
 // Lower implements [Lower] interface.
-func (v String) Lower(s Store) {
+func (v String) Lower(s *Store) {
 	ok := s.Memory.Write(v.Offset, []byte(v.Raw))
 	if !ok {
 		s.Error = ErrMemWrite
@@ -112,7 +112,7 @@ func (v ReturnedList[T]) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (ReturnedList[T]) Lift(s Store) ReturnedList[T] {
+func (ReturnedList[T]) Lift(s *Store) ReturnedList[T] {
 	offset := uint32(s.Stack.Pop())
 	buf, ok := s.Memory.Read(offset, 8)
 	if !ok {
@@ -142,7 +142,7 @@ func (ReturnedList[T]) Lift(s Store) ReturnedList[T] {
 // Lower implements [Lower] interface.
 // See https://github.com/WebAssembly/component-model/blob/main/design/mvp/CanonicalABI.md#flattening
 // To use this need to have pre-allocated linear memory into which to write the actual data.
-func (v ReturnedList[T]) Lower(s Store) {
+func (v ReturnedList[T]) Lower(s *Store) {
 	if v.DataPtr == 0 {
 		s.Error = ErrMemWrite
 		return
@@ -180,7 +180,7 @@ func (v List[T]) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (List[T]) Lift(s Store) List[T] {
+func (List[T]) Lift(s *Store) List[T] {
 	size := uint32(s.Stack.Pop())
 	offset := uint32(s.Stack.Pop())
 	// empty list
@@ -200,7 +200,7 @@ func (List[T]) Lift(s Store) List[T] {
 // Lower implements [Lower] interface.
 // See https://github.com/WebAssembly/component-model/blob/main/design/mvp/CanonicalABI.md#flattening
 // In theory we should re-allocate enough linear memory into which to write the actual data.
-func (v List[T]) Lower(s Store) {
+func (v List[T]) Lower(s *Store) {
 	size := len(v.Raw)
 	ptr := v.Offset
 	for i := uint32(0); i < uint32(size); i++ {
@@ -231,7 +231,7 @@ func (v ListStrings) ValueTypes() []ValueType {
 }
 
 // Lift implements [Lift] interface.
-func (ListStrings) Lift(s Store) ListStrings {
+func (ListStrings) Lift(s *Store) ListStrings {
 	size := uint32(s.Stack.Pop())
 	offset := uint32(s.Stack.Pop())
 
@@ -267,7 +267,7 @@ func (ListStrings) Lift(s Store) ListStrings {
 // Lower implements [Lower] interface.
 // See https://github.com/WebAssembly/component-model/blob/main/design/mvp/CanonicalABI.md#flattening
 // In theory we should re-allocate enough linear memory into which to write the actual data.
-func (v ListStrings) Lower(s Store) {
+func (v ListStrings) Lower(s *Store) {
 	size := uint32(len(v.Raw))
 	plen := size * 8
 
