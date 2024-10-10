@@ -235,3 +235,140 @@ func TestListStrings(t *testing.T) {
 
 	is.SliceEqual(c, list.Unwrap(), data)
 }
+
+func TestResultOKUInt32(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	store := wypes.Store{Stack: stack, Memory: wypes.NewSliceMemory(1024)}
+	save := wypes.Result[wypes.UInt32, wypes.UInt32, wypes.UInt32]{
+		IsError: false,
+		OK:      1,
+		Offset:  64,
+		DataPtr: 128,
+	}
+
+	save.Lower(&store)
+	store.Stack.Push(64)
+	result := wypes.Result[wypes.UInt32, wypes.UInt32, wypes.UInt32]{}.Lift(&store)
+
+	is.Equal(c, result.IsError, false)
+	is.Equal(c, result.OK, wypes.UInt32(1))
+}
+
+func TestResultErrUInt32(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	store := wypes.Store{Stack: stack, Memory: wypes.NewSliceMemory(1024)}
+	save := wypes.Result[wypes.UInt32, wypes.UInt32, wypes.UInt32]{
+		IsError: true,
+		Error:   1,
+		Offset:  64,
+		DataPtr: 128,
+	}
+
+	save.Lower(&store)
+	store.Stack.Push(64)
+	result := wypes.Result[wypes.UInt32, wypes.UInt32, wypes.UInt32]{}.Lift(&store)
+
+	is.Equal(c, result.IsError, true)
+	is.Equal(c, result.Error, wypes.UInt32(1))
+}
+
+func TestResultOKStringUInt32(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	store := wypes.Store{Stack: stack, Memory: wypes.NewSliceMemory(1024)}
+	save := wypes.Result[wypes.String, wypes.String, wypes.UInt32]{
+		IsError: false,
+		OK:      wypes.String{Raw: "awesome"},
+		Error:   wypes.UInt32(0),
+		Offset:  64,
+		DataPtr: 128,
+	}
+
+	save.Lower(&store)
+	store.Stack.Push(64)
+	result := wypes.Result[wypes.String, wypes.String, wypes.UInt32]{}.Lift(&store)
+
+	is.Equal(c, result.IsError, false)
+	is.Equal(c, result.OK.Unwrap(), "awesome")
+}
+
+func TestResultErrStringUInt32(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	store := wypes.Store{Stack: stack, Memory: wypes.NewSliceMemory(1024)}
+	save := wypes.Result[wypes.String, wypes.String, wypes.UInt32]{
+		IsError: true,
+		OK:      wypes.String{Raw: "awesome"},
+		Error:   wypes.UInt32(100),
+		Offset:  64,
+		DataPtr: 128,
+	}
+
+	save.Lower(&store)
+	store.Stack.Push(64)
+	result := wypes.Result[wypes.String, wypes.String, wypes.UInt32]{}.Lift(&store)
+
+	is.Equal(c, result.IsError, true)
+	is.Equal(c, result.Error.Unwrap(), 100)
+}
+
+func TestResultOKListUInt32(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	store := wypes.Store{Stack: stack, Memory: wypes.NewSliceMemory(1024)}
+	save := wypes.Result[wypes.List[wypes.UInt32], wypes.List[wypes.UInt32], wypes.UInt32]{
+		IsError: false,
+		OK:      wypes.List[wypes.UInt32]{Raw: []wypes.UInt32{1, 2, 3, 4, 5}},
+		Error:   wypes.UInt32(0),
+		Offset:  64,
+		DataPtr: 128,
+	}
+
+	save.Lower(&store)
+	store.Stack.Push(64)
+	result := wypes.Result[wypes.List[wypes.UInt32], wypes.List[wypes.UInt32], wypes.UInt32]{}.Lift(&store)
+
+	is.Equal(c, result.IsError, false)
+	is.SliceEqual(c, result.OK.Raw, []wypes.UInt32{1, 2, 3, 4, 5})
+}
+
+func TestResultErrListUInt32(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	store := wypes.Store{Stack: stack, Memory: wypes.NewSliceMemory(1024)}
+	save := wypes.Result[wypes.List[wypes.UInt32], wypes.List[wypes.UInt32], wypes.String]{
+		IsError: true,
+		Error:   wypes.String{Raw: "error"},
+		Offset:  64,
+		DataPtr: 128,
+	}
+
+	save.Lower(&store)
+	store.Stack.Push(64)
+	result := wypes.Result[wypes.List[wypes.UInt32], wypes.List[wypes.UInt32], wypes.String]{}.Lift(&store)
+
+	is.Equal(c, result.IsError, true)
+	is.Equal(c, result.Error.Unwrap(), "error")
+}
+
+func TestResultOKBytes(t *testing.T) {
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	store := wypes.Store{Stack: stack, Memory: wypes.NewSliceMemory(1024)}
+	save := wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]{
+		IsError: false,
+		OK:      wypes.Bytes{Raw: []byte{1, 2, 3, 4, 5}},
+		Error:   wypes.UInt32(0),
+		Offset:  64,
+		DataPtr: 128,
+	}
+
+	save.Lower(&store)
+	store.Stack.Push(64)
+	result := wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]{}.Lift(&store)
+
+	is.Equal(c, result.IsError, false)
+	is.SliceEqual(c, result.OK.Raw, []byte{1, 2, 3, 4, 5})
+}
