@@ -44,16 +44,17 @@ func (Bool) MemoryLift(s *Store, offset uint32) (Bool, uint32) {
 		return Bool(false), 0
 	}
 
-	return Bool(raw[0] == 1), BoolSize
+	return Bool(raw[0] > 0), BoolSize
 }
 
 // MemoryLower implements [MemoryLower] interface.
 func (v Bool) MemoryLower(s *Store, offset uint32) (length uint32) {
-	res := 0
+	res := byte(0)
 	if v {
 		res = 1
 	}
-	ok := s.Memory.Write(offset, []byte{byte(res)})
+
+	ok := s.Memory.Write(offset, []byte{res})
 	if !ok {
 		s.Error = ErrMemRead
 		return 0
