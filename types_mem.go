@@ -442,20 +442,9 @@ func (Result[Shape, OK, Err]) Lift(s *Store) Result[Shape, OK, Err] {
 	var B UInt32
 	isError, sz := B.MemoryLift(s, offset)
 
-	buf, ok := s.Memory.Read(offset+sz, 4)
-	if !ok {
-		s.Error = ErrMemRead
-		return Result[Shape, OK, Err]{
-			IsError: true,
-			Offset:  offset + sz,
-		}
-	}
-
-	ptr := binary.LittleEndian.Uint32(buf[0:])
-
 	if isError > 0 {
 		var E Err
-		err, _ := E.MemoryLift(s, ptr)
+		err, _ := E.MemoryLift(s, offset+sz)
 		return Result[Shape, OK, Err]{
 			IsError: true,
 			Error:   err,
@@ -464,7 +453,7 @@ func (Result[Shape, OK, Err]) Lift(s *Store) Result[Shape, OK, Err] {
 	}
 
 	var T OK
-	val, _ := T.MemoryLift(s, ptr)
+	val, _ := T.MemoryLift(s, offset+sz)
 	return Result[Shape, OK, Err]{
 		IsError: false,
 		OK:      val,
@@ -489,14 +478,10 @@ func (v Result[Shape, OK, Err]) Lower(s *Store) {
 
 	switch v.IsError {
 	case true:
-		v.Error.MemoryLower(s, v.DataPtr)
+		v.Error.MemoryLower(s, v.Offset+sz)
 	case false:
-		v.OK.MemoryLower(s, v.DataPtr)
+		v.OK.MemoryLower(s, v.Offset+sz)
 	}
-
-	ptrdata := make([]byte, 4)
-	binary.LittleEndian.PutUint32(ptrdata[0:], v.DataPtr)
-	s.Memory.Write(v.Offset+sz, ptrdata)
 }
 
 // TODO: fixed-width array
