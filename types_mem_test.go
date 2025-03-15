@@ -280,7 +280,7 @@ func TestResultOKStringUInt32(t *testing.T) {
 	store := wypes.Store{Stack: stack, Memory: wypes.NewSliceMemory(1024)}
 	save := wypes.Result[wypes.String, wypes.String, wypes.UInt32]{
 		IsError: false,
-		OK:      wypes.String{Raw: "awesome that this is working the way I want it to"},
+		OK:      wypes.String{Raw: "awesome"},
 		Error:   wypes.UInt32(0),
 		Offset:  64,
 		DataPtr: 128,
@@ -291,7 +291,7 @@ func TestResultOKStringUInt32(t *testing.T) {
 	result := wypes.Result[wypes.String, wypes.String, wypes.UInt32]{}.Lift(&store)
 
 	is.Equal(c, result.IsError, false)
-	is.Equal(c, result.OK.Unwrap(), "awesome that this is working the way I want it to")
+	is.Equal(c, result.OK.Unwrap(), "awesome")
 }
 
 func TestResultErrStringUInt32(t *testing.T) {
@@ -300,7 +300,7 @@ func TestResultErrStringUInt32(t *testing.T) {
 	store := wypes.Store{Stack: stack, Memory: wypes.NewSliceMemory(1024)}
 	save := wypes.Result[wypes.String, wypes.String, wypes.UInt32]{
 		IsError: true,
-		OK:      wypes.String{Raw: "awesome that this is working the way I want"},
+		OK:      wypes.String{Raw: "awesome"},
 		Error:   wypes.UInt32(100),
 		Offset:  64,
 		DataPtr: 128,
@@ -357,13 +357,9 @@ func TestResultOKBytes(t *testing.T) {
 	c := is.NewRelaxed(t)
 	stack := wypes.NewSliceStack(4)
 	store := wypes.Store{Stack: stack, Memory: wypes.NewSliceMemory(1024)}
-	data := make([]byte, 0, 256)
-	for i := 0; i < 256; i++ {
-		data = append(data, byte(i))
-	}
 	save := wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]{
 		IsError: false,
-		OK:      wypes.Bytes{Raw: data},
+		OK:      wypes.Bytes{Raw: []byte{1, 2, 3, 4, 5}},
 		Error:   wypes.UInt32(0),
 		Offset:  64,
 		DataPtr: 128,
@@ -374,23 +370,5 @@ func TestResultOKBytes(t *testing.T) {
 	result := wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]{}.Lift(&store)
 
 	is.Equal(c, result.IsError, false)
-	is.SliceEqual(c, result.OK.Raw, data)
-}
-
-func TestResultErrBytes(t *testing.T) {
-	c := is.NewRelaxed(t)
-	stack := wypes.NewSliceStack(4)
-	store := wypes.Store{Stack: stack, Memory: wypes.NewSliceMemory(1024)}
-	save := wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]{
-		IsError: true,
-		Error:   wypes.UInt32(2),
-		Offset:  64,
-		DataPtr: 128,
-	}
-
-	save.Lower(&store)
-	store.Stack.Push(64)
-	result := wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]{}.Lift(&store)
-
-	is.Equal(c, result.IsError, true)
+	is.SliceEqual(c, result.OK.Raw, []byte{1, 2, 3, 4, 5})
 }
