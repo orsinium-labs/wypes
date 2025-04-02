@@ -402,3 +402,49 @@ func (v HostRef[T]) Lower(s *Store) {
 	}
 	s.Stack.Push(Raw(index))
 }
+
+// MemoryLift implements [MemoryLifter] interface.
+func (HostRef[T]) MemoryLift(s *Store, offset uint32) (HostRef[T], uint32) {
+	i, ok := s.Memory.Read(offset, uInt32Size)
+	var def T
+	if !ok {
+		s.Error = ErrMemRead
+		return HostRef[T]{}, 0
+	}
+	index := binary.LittleEndian.Uint32(i)
+	raw, found := s.Refs.Get(index, def)
+	if !found {
+		s.Error = ErrRefNotFound
+	}
+	cast, ok := raw.(T)
+	if found && !ok {
+		s.Error = ErrRefCast
+		cast = def
+	}
+	return HostRef[T]{
+		Raw:   cast,
+		index: index,
+		refs:  s.Refs,
+	}, uInt32Size
+}
+
+// MemoryLower implements [MemoryLower] interface.
+func (v HostRef[T]) MemoryLower(s *Store, offset uint32) (length uint32) {
+	var index uint32
+	if v.index == 0 {
+		index = s.Refs.Put(v.Raw)
+	} else {
+		index = v.index
+		s.Refs.Set(v.index, v.Raw)
+	}
+
+	data := make([]byte, uInt32Size)
+	binary.LittleEndian.PutUint32(data, uint32(index))
+	ok := s.Memory.Write(offset, data)
+	if !ok {
+		s.Error = ErrMemWrite
+		return 0
+	}
+
+	return uInt32Size
+}
