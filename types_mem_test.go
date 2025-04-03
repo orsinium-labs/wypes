@@ -372,3 +372,32 @@ func TestResultOKBytes(t *testing.T) {
 	is.Equal(c, result.IsError, false)
 	is.SliceEqual(c, result.OK.Raw, []byte{1, 2, 3, 4, 5})
 }
+
+func TestResultOKHostRef(t *testing.T) {
+	type thing struct {
+		ID wypes.Int32
+	}
+
+	c := is.NewRelaxed(t)
+	stack := wypes.NewSliceStack(4)
+	store := wypes.Store{
+		Stack:  stack,
+		Memory: wypes.NewSliceMemory(1024),
+		Refs:   wypes.NewMapRefs(),
+	}
+	ref := thing{ID: 5}
+	save := wypes.Result[wypes.HostRef[*thing], wypes.HostRef[*thing], wypes.UInt32]{
+		IsError: false,
+		OK:      wypes.HostRef[*thing]{Raw: &ref},
+		Error:   wypes.UInt32(0),
+		Offset:  64,
+		DataPtr: 128,
+	}
+
+	save.Lower(&store)
+	store.Stack.Push(64)
+	result := wypes.Result[wypes.HostRef[*thing], wypes.HostRef[*thing], wypes.UInt32]{}.Lift(&store)
+
+	is.Equal(c, result.IsError, false)
+	is.Equal(c, result.OK.Raw, &ref)
+}
