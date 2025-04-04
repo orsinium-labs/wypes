@@ -283,14 +283,14 @@ func (v List[T]) Lower(s *Store) {
 
 // MemoryLift implements [MemoryLift] interface.
 func (List[T]) MemoryLift(s *Store, offset uint32) (List[T], uint32) {
-	sp, ok := s.Memory.Read(offset, 4)
+	sp, ok := s.Memory.Read(offset, 8)
 	if !ok {
 		s.Error = ErrMemRead
 		return List[T]{}, 0
 	}
-	sz := binary.LittleEndian.Uint32(sp[0:])
+	ptr := binary.LittleEndian.Uint32(sp[0:])
+	sz := binary.LittleEndian.Uint32(sp[4:])
 
-	ptr := offset + 4
 	data := make([]T, sz)
 	var v T
 	var length uint32
@@ -305,15 +305,15 @@ func (List[T]) MemoryLift(s *Store, offset uint32) (List[T], uint32) {
 // MemoryLower implements [MemoryLower] interface.
 func (v List[T]) MemoryLower(s *Store, offset uint32) (length uint32) {
 	sz := len(v.Raw)
-
-	ptr := offset + 4
+	ptr := offset + 8
 	for i := uint32(0); i < uint32(sz); i++ {
 		length := v.Raw[i].MemoryLower(s, ptr)
 		ptr += length
 	}
 
-	ptrdata := make([]byte, 4)
-	binary.LittleEndian.PutUint32(ptrdata[0:], uint32(sz))
+	ptrdata := make([]byte, 8)
+	binary.LittleEndian.PutUint32(ptrdata[0:], offset+8)
+	binary.LittleEndian.PutUint32(ptrdata[4:], uint32(len(v.Raw)))
 
 	ok := s.Memory.Write(offset, ptrdata)
 	if !ok {
