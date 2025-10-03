@@ -32,6 +32,9 @@ const (
 //
 // Store itself implements [Lift] and so can be used as a host-defined function argument.
 type Store struct {
+	// Name is the name of the calling module.
+	Name string
+
 	// Stack is where [Lift] takes the values from and [Lower] puts values to.
 	Stack Stack
 

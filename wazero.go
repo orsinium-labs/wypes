@@ -45,6 +45,7 @@ func wazeroAdaptHostFunc(hf HostFunc, refs Refs) api.GoModuleFunction {
 	return api.GoModuleFunc(func(ctx context.Context, mod api.Module, stack []uint64) {
 		adaptedStack := SliceStack(stack)
 		store := Store{
+			Name:    mod.Name(),
 			Memory:  mod.Memory(),
 			Stack:   &adaptedStack,
 			Refs:    refs,
